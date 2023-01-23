@@ -82,7 +82,7 @@ with open(username + '_bookmarks.csv', 'w', newline='', encoding='utf-8') as csv
                 warnings = bookmark.select("li.warnings")
                 rating = bookmark.select_one("span.rating")
                 categories = bookmark.select("span.category")
-                words = bookmark.select_one("dd.words")
+                words = bookmark.select_one("dd.words") or bookmark.select_one("dd")
                 tags = bookmark.select("li.freeforms")
                 characters = bookmark.select("li.characters")
                 relationships = bookmark.select("li.relationships")
@@ -111,10 +111,6 @@ with open(username + '_bookmarks.csv', 'w', newline='', encoding='utf-8') as csv
                     category_list = category_str.split(', ')
                 else:
                     category_str = "None"
-                if words:
-                    words_str = words.text
-                else:
-                    words_str = "None"
                 if tags:
                     tag_str = ', '.join([tag.text for tag in tags])
                     tag_list = tag_str.split(', ')  # split the string by a comma and space
@@ -134,6 +130,10 @@ with open(username + '_bookmarks.csv', 'w', newline='', encoding='utf-8') as csv
                     date_str = dates.text
                 else:
                     date_str = "None"
+                if words:
+                    words_str = words.text
+                else:
+                    words_str = "None"
 
                 # Write the data to the CSV file
                 csvwriter.writerow([title, author_str, fandom_str, warning_str, rating_str, category_str, character_str,
