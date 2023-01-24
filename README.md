@@ -2,7 +2,7 @@
 This script is a web scraper that extracts bookmarks from the Archive of Our Own website (AO3) and saves the data to a CSV file. Works only on public bookmarks.
 
 # Features
-- Extracts public bookmark data such as title, authors, fandoms, warnings, ratings, categories, characters, relationships, tags, wordcounts and date bookmarked.
+- Extracts public bookmark data such as URL, title, authors, fandoms, warnings, ratings, categories, characters, relationships, tags, wordcounts and date bookmarked.
 - Allows user to specify a range of pages to scrape.
 - Allows user to specify an interval delay between requests.
 - Displays a progress bar while scraping.
@@ -19,8 +19,8 @@ This script is a web scraper that extracts bookmarks from the Archive of Our Own
 # How to Use
 - Install `Python 3`
 - Install `PIP`
-- Install the required dependencies by running `pip install -r requirements.txt` or install them individually by running `pip install requests`, `pip install beautifulsoup4`, `pip install tqdm` and `pip install csv` in command prompt or terminal. Before running the command, make sure that you are in the correct directory where the `requirements.txt` file is located. You can navigate to the correct directory in the command prompt or terminal by using the `cd` command
-- Run `ao3_scraper.py`
+- Install the required dependencies by running `pip install -r requirements.txt` or install them individually by running `pip install requests`, `pip install beautifulsoup4`, `pip install tqdm` and `pip install csv` in command prompt or terminal. Before running the command, make sure that you are in the correct directory where the `requirements.txt` file is located. You can navigate to the correct directory in the command prompt or terminal by using the `cd` command.
+- Run the script by running `python ao3_scraper.py` in command prompt or terminal. Make sure you're in the correct directory.
 - When prompted, enter your AO3 username, the starting and ending page of bookmarks to scrape, and an interval delay between requests. Suggested delay time is 5 seconds or more.
 - The script will begin scraping the bookmarks and will save the extracted data to a CSV file with the format of `username_bookmarks.csv`.
 
