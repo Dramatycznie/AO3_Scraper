@@ -24,7 +24,7 @@ This script is a web scraper that extracts bookmarks from the Archive of Our Own
 - When prompted, enter your AO3 username, the starting and ending page of bookmarks to scrape, and an interval delay between requests. Suggested delay time is 5 seconds or more.
 - The script will begin scraping the bookmarks and will save the extracted data to a CSV file with the format of `username_bookmarks.csv`.
 
-Note: Be mindful of the delay time and the number of pages to scrape, as it may take a long time to execute and also it may put a lot of burden on AO3's server. A suggested delay time of 5 seconds or more is recommended to prevent overwhelming the server with requests.
+Note: Be mindful of the delay time and the number of pages to scrape, as it may take a long time to execute and also it may put a lot of burden on AO3's server. A suggested delay time of 5 seconds or more is recommended to prevent overwhelming the server with requests. Consider longer delays if you're scraping a lot of data.
 
 # What can be done with the data?
 The script saves the extracted data in a CSV file with the format of `username_bookmarks.csv.` This file can be easily imported into a spreadsheet program such as Microsoft Excel, Google Sheets, or LibreOffice Calc. Once imported, you can then manipulate the data as you like. For example, you can use Excel's Power Query to split the delimited data from one column into new rows.
