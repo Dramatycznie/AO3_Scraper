@@ -61,7 +61,7 @@ with open(username + '_bookmarks.csv', 'w', newline='', encoding='utf-8') as csv
     csvwriter = csv.writer(csvfile)
     # Write the header row
     csvwriter.writerow(
-        ['Title', 'Authors', 'Fandoms', 'Warnings', 'Rating', 'Categories', 'Characters', 'Relationships',
+        ['URL', 'Title', 'Authors', 'Fandoms', 'Warnings', 'Rating', 'Categories', 'Characters', 'Relationships',
          'Tags', 'Words', 'Date Bookmarked'])
 
     for page in tqdm(range(page1, page2 + 1)):
@@ -87,6 +87,8 @@ with open(username + '_bookmarks.csv', 'w', newline='', encoding='utf-8') as csv
                 characters = bookmark.select("li.characters")
                 relationships = bookmark.select("li.relationships")
                 dates = bookmark.select_one("div.user p.datetime")
+                url_str = bookmark.select_one("h4 a:nth-of-type(1)").attrs["href"]
+                url = "https://archiveofourown.org" + url_str
                 if authors:
                     author_str = ', '.join([author.text for author in authors])
                     author_list = author_str.split(', ')
@@ -134,10 +136,14 @@ with open(username + '_bookmarks.csv', 'w', newline='', encoding='utf-8') as csv
                     words_str = words.text
                 else:
                     words_str = "None"
+                if url:
+                    url = "https://archiveofourown.org" + bookmark.select_one("h4 a:nth-of-type(1)")["href"]
+                else:
+                    url = "None"
 
                 # Write the data to the CSV file
-                csvwriter.writerow([title, author_str, fandom_str, warning_str, rating_str, category_str, character_str,
-                                    relationship_str, tag_str, words_str, date_str])
+                csvwriter.writerow([url, title, author_str, fandom_str, warning_str, rating_str, category_str,
+                                    character_str, relationship_str, tag_str, words_str, date_str])
             else:
                 print("Title not found for bookmark on page: ", page)
 print("All done!")
