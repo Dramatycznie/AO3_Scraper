@@ -11,50 +11,73 @@ print("")
 print("Hello and welcome to AO3 Bookmark Scraper")
 print("")
 
-# Prompt for username, pages to scrape, delay
-username = input("Your username: ")
+while True:
+    # Get the user's AO3 username
+    username = input("Your username: ")
+    # Check if the input is valid
+    if not username.isalnum() or not len(username):
+        print("Invalid input: Please enter a valid username")
+        continue
+    break
+
 while True:
     try:
+        # Get the starting page number to scrape from
         page1 = int(input("Start scraping from page: "))
+        # Get the ending page number to scrape to
         page2 = int(input("Stop scraping at page: "))
+        # Check if input is valid
         if page1 >= page2:
             print("Invalid input: End page should be bigger than start page")
             continue
         break
     except ValueError:
         print("Invalid input: Please enter a valid number")
+
 while True:
     try:
+        # Prompt for delay
         delay = int(input("Pick request interval (in seconds). 5 or more "))
+        # Check if the input is valid
+        if delay < 5:
+            print("Invalid input: Please enter a valid number")
+            continue
         break
     except ValueError:
         print("Invalid input: Please enter a valid number")
 
-# Base URL
+# Create base URL for the user's AO3 bookmarks
 base_url = "https://archiveofourown.org/users/" + username + "/bookmarks?page="
 
-# Check the status code of the last page
 try:
+    # Send a GET request to the last page
     response = requests.get(base_url + str(page2))
+    # Check the status code of the response
     if response.status_code != 200:
         print("Error: End page is out of range.")
-        # Prompt the user for a new end page
+
         while True:
             try:
+                # Prompt the user for a new end page
                 page2 = int(input("Enter a new end page: "))
                 response = requests.get(base_url + str(page2))
                 if response.status_code == 200:
                     break
+
                 else:
                     print("Error: End page is out of range.")
                     continue
             except ValueError:
                 print("Invalid input: Please enter a valid number")
         print("Loading... Please wait")
+
 except requests.exceptions.RequestException as e:
     print("Error: ", e)
     sys.exit(1)
+
+# Print loading page
 print("Loading... Please wait")
+
 # Open a CSV file for writing
 with open(username + '_bookmarks.csv', 'w', newline='', encoding='utf-8') as csvfile:
     # Create a CSV writer object
@@ -64,10 +87,17 @@ with open(username + '_bookmarks.csv', 'w', newline='', encoding='utf-8') as csv
         ['URL', 'Title', 'Authors', 'Fandoms', 'Warnings', 'Rating', 'Categories', 'Characters', 'Relationships',
          'Tags', 'Words', 'Date Bookmarked'])
 
-    for page in tqdm(range(page1, page2 + 1)):
+    # Calculate the total number of pages to scrape
+    total_pages = page2 - page1 + 1
+
+    # Use tqdm to create a progress bar with the total number of pages
+    for page in tqdm(range(page1, page2 + 1), total=total_pages):
         try:
+            # Send a GET request to the current page
             response = requests.get(base_url + str(page))
+            # Add delay between requests to be respectful to the website
             time.sleep(delay)
+            # Parse the HTML of the page using BeautifulSoup
             soup = BeautifulSoup(response.text, 'html.parser')
         except requests.exceptions.RequestException as e:
             print("Error: ", e)
@@ -75,8 +105,14 @@ with open(username + '_bookmarks.csv', 'w', newline='', encoding='utf-8') as csv
 
         # Extract the data using the provided selectors
         for bookmark in soup.select("li.bookmark"):
-            title = bookmark.select_one("h4 a:nth-of-type(1)").text
+            title_element = bookmark.select_one("h4 a:nth-of-type(1)")
+            if title_element:
+                title = title_element.text
+            else:
+                continue
+
             if title:
+                # Extract the data of the bookmark
                 authors = bookmark.select("a[rel='author']")
                 fandoms = bookmark.select(".fandoms a")
                 warnings = bookmark.select("li.warnings")
@@ -146,4 +182,6 @@ with open(username + '_bookmarks.csv', 'w', newline='', encoding='utf-8') as csv
                                     character_str, relationship_str, tag_str, words_str, date_str])
             else:
                 print("Title not found for bookmark on page: ", page)
+
+# Message at the end
 print("All done!")
