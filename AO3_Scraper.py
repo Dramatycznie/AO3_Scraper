@@ -47,20 +47,23 @@ while True:
             print("Start page is out of range")
             continue
         while True:
-            # Get the ending page number to scrape to
-            page2 = int(input("Stop scraping at page: "))
-            print("Checking...")
-            if page1 >= page2:
-                print("Invalid input: End page should be bigger than start page")
-                continue
-            # Send a GET request to the last page
-            response = requests.get(base_url + str(page2))
-            soup = BeautifulSoup(response.text, 'html.parser')
-            bookmarks = soup.find_all("li", class_="bookmark")
-            if len(bookmarks) == 0:
-                print("End page is out of range")
-                continue
-            break
+            try:
+                # Get the ending page number to scrape to
+                page2 = int(input("Stop scraping at page: "))
+                print("Checking...")
+                if page1 >= page2:
+                    print("Invalid input: End page should be bigger than start page")
+                    continue
+                # Send a GET request to the last page
+                response = requests.get(base_url + str(page2))
+                soup = BeautifulSoup(response.text, 'html.parser')
+                bookmarks = soup.find_all("li", class_="bookmark")
+                if len(bookmarks) == 0:
+                    print("End page is out of range")
+                    continue
+                break
+            except ValueError:
+                print("Invalid input: Please enter a valid number")
         break
     # Handle any errors that may occur
     except ValueError:
