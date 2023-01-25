@@ -12,6 +12,7 @@ print("")
 while True:
     # Get the user's AO3 username
     username = input("Your username: ")
+    print("Checking...")
     # Check if the input is valid
     if not username.isalnum() or not len(username):
         print("Invalid input: Please enter a valid username")
@@ -21,11 +22,10 @@ while True:
     soup = BeautifulSoup(response.text, 'html.parser')
     # check if the response contain a specific element
     if soup.find("div", class_="user"):
-        print("Checking...")
-        print(f"Username {username} is valid.")
         break
     else:
-        print(f"Username {username} does not exist. Please enter a valid username")
+        print(f"Username {username} does not exist")
+        print("Please enter a valid username")
         continue
 
 # Create base URL for the user's AO3 bookmarks
@@ -38,26 +38,29 @@ while True:
     try:
         # Get the starting page number to scrape from
         page1 = int(input("Start scraping from page: "))
+        print("Checking...")
         # Send a GET request to the first page
         response = requests.get(base_url + str(page1))
         soup = BeautifulSoup(response.text, 'html.parser')
         bookmarks = soup.find_all("li", class_="bookmark")
         if len(bookmarks) == 0:
-            print("Error: Start page is out of range.")
+            print("Start page is out of range")
             continue
-        # Get the ending page number to scrape to
-        page2 = int(input("Stop scraping at page: "))
-        if page1 >= page2:
-            print("Invalid input: End page should be bigger than start page")
-            continue
-        # Send a GET request to the last page
-        # Move this to avoid asking for the start page if the end page is invalid
-        response = requests.get(base_url + str(page2))
-        soup = BeautifulSoup(response.text, 'html.parser')
-        bookmarks = soup.find_all("li", class_="bookmark")
-        if len(bookmarks) == 0:
-            print("Error: End page is out of range.")
-            continue
+        while True:
+            # Get the ending page number to scrape to
+            page2 = int(input("Stop scraping at page: "))
+            print("Checking...")
+            if page1 >= page2:
+                print("Invalid input: End page should be bigger than start page")
+                continue
+            # Send a GET request to the last page
+            response = requests.get(base_url + str(page2))
+            soup = BeautifulSoup(response.text, 'html.parser')
+            bookmarks = soup.find_all("li", class_="bookmark")
+            if len(bookmarks) == 0:
+                print("End page is out of range")
+                continue
+            break
         break
     # Handle any errors that may occur
     except ValueError:
@@ -67,6 +70,7 @@ while True:
     try:
         # Prompt for delay
         delay = int(input("Pick request interval (in seconds). 5 or more "))
+        print("Checking...")
         # Check if the input is valid
         if delay < 5:
             print("Invalid input: Please enter a valid number")
@@ -75,9 +79,6 @@ while True:
     # Handle any errors that may occur
     except ValueError:
         print("Invalid input: Please enter a valid number")
-
-# Print loading page message
-print("Loading... Please wait")
 
 # Open a CSV file for writing
 with open(username + '_bookmarks.csv', 'w', newline='', encoding='utf-8') as csvfile:
@@ -207,6 +208,13 @@ with open(username + '_bookmarks.csv', 'w', newline='', encoding='utf-8') as csv
                 # Write the data to the CSV file
                 csvwriter.writerow([url, title, authors, fandoms, warnings, rating, categories,
                                     characters, relationships, tags, words, dates])
+        from requests.exceptions import RequestException
+
+        try:
+            response = requests.get(base_url + str(page), timeout=5)
+        except RequestException as e:
+            print(f"Error loading page {page}. {e}")
+            break
 
 # Message at the end of the program
 print("All done!")
