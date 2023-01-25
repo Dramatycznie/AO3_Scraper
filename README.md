@@ -16,7 +16,7 @@ This script is a web scraper that extracts bookmarks from the Archive of Our Own
 - tqdm library
 - csv library
 
-# How to Use
+# How to use
 - Install `Python 3`
 - Install `PIP`
 - Install the required dependencies by running `pip install -r requirements.txt` or install them individually by running `pip install requests`, `pip install beautifulsoup4`, `pip install tqdm` and `pip install csv` in command prompt or terminal. Before running the command, make sure that you are in the correct directory where the `requirements.txt` file is located. You can navigate to the correct directory in the command prompt or terminal by using the `cd` command.
@@ -25,6 +25,15 @@ This script is a web scraper that extracts bookmarks from the Archive of Our Own
 - The script will begin scraping the bookmarks and will save the extracted data to a CSV file with the format of `username_bookmarks.csv`.
 
 Note: Be mindful of the delay time and the number of pages to scrape, as it may take a long time to execute and also it may put a lot of burden on AO3's server. A suggested delay time of 5 seconds or more is recommended to prevent overwhelming the server with requests. Consider longer delays if you're scraping a lot of data.
+
+# Or use the relase instead
+Instead of downloading the script, you can download the release AO3_Scraper.exe which is the compiled version of the script. This allows you to run the script without having to install Python, PIP or any other dependencies.
+
+- Download the release.
+- Unpack it.
+- Run `AO3_Scraper.exe`.
+- When prompted, enter your AO3 username, the starting and ending page of bookmarks to scrape, and an interval delay between requests. Suggested delay time is 5 seconds or more.
+- The script will begin scraping the bookmarks and will save the extracted data to a CSV file with the format of `username_bookmarks.csv`.
 
 # What can be done with the data?
 The script saves the extracted data in a CSV file with the format of `username_bookmarks.csv.` This file can be easily imported into a spreadsheet program such as Microsoft Excel, Google Sheets, or LibreOffice Calc. Once imported, you can then manipulate the data as you like. For example, you can use Excel's Power Query to split the delimited data from one column into new rows.
