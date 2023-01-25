@@ -5,11 +5,13 @@ import csv
 from tqdm import tqdm
 from requests.exceptions import RequestException
 
+# Starting message
+print("")
+print("Hello and welcome to AO3 Bookmark Scraper")
+print("")
+
 while True:
-    # Starting message
-    print("")
-    print("Hello and welcome to AO3 Bookmark Scraper")
-    print("")
+
     while True:
         # Get the user's AO3 username
         username = input("Your username: ")
@@ -89,7 +91,6 @@ while True:
         try:
             # Prompt for delay
             delay = int(input("Pick request interval (in seconds). 5 or more "))
-            print("Checking...")
             # Check if the input is valid
             if delay < 5:
                 print("Invalid input: Please enter a valid number")
