@@ -1,10 +1,8 @@
-import sys
 import requests
 from bs4 import BeautifulSoup
 import time
 import csv
 from tqdm import tqdm
-
 
 # Starting message
 print("")
@@ -18,19 +16,50 @@ while True:
     if not username.isalnum() or not len(username):
         print("Invalid input: Please enter a valid username")
         continue
-    break
+    # Send a GET request to the user's profile page
+    response = requests.get(f"https://archiveofourown.org/users/{username}")
+    soup = BeautifulSoup(response.text, 'html.parser')
+    # check if the response contain a specific element
+    if soup.find("div", class_="user"):
+        print("Checking...")
+        print(f"Username {username} is valid.")
+        break
+    else:
+        print(f"Username {username} does not exist. Please enter a valid username")
+        continue
+
+# Create base URL for the user's AO3 bookmarks
+base_url = "https://archiveofourown.org/users/" + username + "/bookmarks?page="
+
+# Initialize page2 to a default value
+page2 = None
 
 while True:
     try:
         # Get the starting page number to scrape from
         page1 = int(input("Start scraping from page: "))
+        # Send a GET request to the first page
+        response = requests.get(base_url + str(page1))
+        soup = BeautifulSoup(response.text, 'html.parser')
+        bookmarks = soup.find_all("li", class_="bookmark")
+        if len(bookmarks) == 0:
+            print("Error: Start page is out of range.")
+            continue
         # Get the ending page number to scrape to
         page2 = int(input("Stop scraping at page: "))
-        # Check if input is valid
         if page1 >= page2:
             print("Invalid input: End page should be bigger than start page")
             continue
+        # Send a GET request to the last page
+        # Move this to avoid asking for the start page if the end page is invalid
+        response = requests.get(base_url + str(page2))
+        soup = BeautifulSoup(response.text, 'html.parser')
+        bookmarks = soup.find_all("li", class_="bookmark")
+        if len(bookmarks) == 0:
+            print("Error: End page is out of range.")
+            continue
         break
+    # Handle any errors that may occur
     except ValueError:
         print("Invalid input: Please enter a valid number")
 
@@ -43,39 +72,11 @@ while True:
             print("Invalid input: Please enter a valid number")
             continue
         break
+    # Handle any errors that may occur
     except ValueError:
         print("Invalid input: Please enter a valid number")
 
-# Create base URL for the user's AO3 bookmarks
-base_url = "https://archiveofourown.org/users/" + username + "/bookmarks?page="
-
-try:
-    # Send a GET request to the last page
-    response = requests.get(base_url + str(page2))
-    # Check the status code of the response
-    if response.status_code != 200:
-        print("Error: End page is out of range.")
-
-        while True:
-            try:
-                # Prompt the user for a new end page
-                page2 = int(input("Enter a new end page: "))
-                response = requests.get(base_url + str(page2))
-                if response.status_code == 200:
-                    break
-
-                else:
-                    print("Error: End page is out of range.")
-                    continue
-            except ValueError:
-                print("Invalid input: Please enter a valid number")
-        print("Loading... Please wait")
-
-except requests.exceptions.RequestException as e:
-    print("Error: ", e)
-    sys.exit(1)
-
-# Print loading page
+# Print loading page message
 print("Loading... Please wait")
 
 # Open a CSV file for writing
@@ -90,8 +91,9 @@ with open(username + '_bookmarks.csv', 'w', newline='', encoding='utf-8') as csv
     # Calculate the total number of pages to scrape
     total_pages = page2 - page1 + 1
 
-    # Use tqdm to create a progress bar with the total number of pages
-    for page in tqdm(range(page1, page2 + 1), total=total_pages):
+    # Use tqdm to create a progress bar with the total number of pages to scrape
+    for page in tqdm(range(page1, page2 + 1), total=total_pages, desc="Scraping"):
+        start_time = time.time()
         try:
             # Send a GET request to the current page
             response = requests.get(base_url + str(page))
@@ -102,17 +104,19 @@ with open(username + '_bookmarks.csv', 'w', newline='', encoding='utf-8') as csv
         except requests.exceptions.RequestException as e:
             print("Error: ", e)
             break
+        end_time = time.time()
 
-        # Extract the data using the provided selectors
+    # Extract the data using the provided selectors
         for bookmark in soup.select("li.bookmark"):
             title_element = bookmark.select_one("h4 a:nth-of-type(1)")
             if title_element:
                 title = title_element.text
+            # Skip the bookmark if it doesn't have a title
             else:
                 continue
 
             if title:
-                # Extract the data of the bookmark
+                # Extract the data using the provided selectors
                 authors = bookmark.select("a[rel='author']")
                 fandoms = bookmark.select(".fandoms a")
                 warnings = bookmark.select("li.warnings")
@@ -123,65 +127,87 @@ with open(username + '_bookmarks.csv', 'w', newline='', encoding='utf-8') as csv
                 characters = bookmark.select("li.characters")
                 relationships = bookmark.select("li.relationships")
                 dates = bookmark.select_one("div.user p.datetime")
-                url_str = bookmark.select_one("h4 a:nth-of-type(1)").attrs["href"]
-                url = "https://archiveofourown.org" + url_str
-                if authors:
-                    author_str = ', '.join([author.text for author in authors])
-                    author_list = author_str.split(', ')
+                url = bookmark.select_one("h4 a:nth-of-type(1)")["href"]
+
+                # Check if the bookmark has authors
+                authors.element = bookmark.select("a[rel='author']")
+                if authors.element:
+                    authors = [author.text for author in authors]
+                    if authors:
+                        authors = ', '.join(authors)
                 else:
-                    author_str = "None"
-                if fandoms:
-                    fandom_str = ', '.join([fandom.text for fandom in fandoms])
-                    fandom_list = fandom_str.split(', ')
+                    authors = ""
+
+                # Check if the bookmark has fandoms
+                fandoms.element = bookmark.select(".fandoms a")
+                if fandoms.element:
+                    fandoms = [fandom.text for fandom in fandoms]
+                    if fandoms:
+                        fandoms = ', '.join(fandoms)
+
+                # Check if the bookmark has warnings
+                warnings_element = bookmark.select("span.warnings")
+                if warnings_element:
+                    warnings = [warning.text for warning in warnings_element]
+                    if warnings:
+                        warnings = ', '.join(warnings)
                 else:
-                    fandom_str = "None"
-                if warnings:
-                    warning_str = ', '.join([warning.text for warning in warnings])
-                    warning_list = warning_str.split(', ')
+                    warnings = ""
+
+                # Check if the bookmark has a rating
+                rating.element = bookmark.select("span.rating")
+                if rating.element:
+                    rating = [rating.text for rating in rating.element]
+                    if rating:
+                        rating = ', '.join(rating)
+
+                # Check if the bookmark has categories
+                categories.element = bookmark.select("span.category")
+                if categories.element:
+                    categories = [category.text for category in categories.element]
+                    if categories:
+                        categories = ', '.join(categories)
+
+                # Check if the bookmark has tags
+                tags_element = bookmark.select("li.freeforms")
+                if tags_element:
+                    tags = [tag.text for tag in tags_element]
+                    if tags:
+                        tags = ', '.join(tags)
                 else:
-                    warning_str = "None"
-                if rating:
-                    rating_str = rating.text
+                    tags = ""
+
+                # Check if the bookmark has characters
+                characters_element = bookmark.select("li.characters")
+                if characters_element:
+                    characters = [character.text for character in characters_element]
+                    if characters:
+                        characters = ', '.join(characters)
                 else:
-                    rating_str = "None"
-                if categories:
-                    category_str = ', '.join([category.text for category in categories])
-                    category_list = category_str.split(', ')
+                    characters = ""
+
+                # Check if the bookmark has relationships
+                relationships_element = bookmark.select("li.relationships")
+                if relationships_element:
+                    relationships = [relationship.text for relationship in relationships_element]
+                    if relationships:
+                        relationships = ', '.join(relationships)
                 else:
-                    category_str = "None"
-                if tags:
-                    tag_str = ', '.join([tag.text for tag in tags])
-                    tag_list = tag_str.split(', ')  # split the string by a comma and space
-                else:
-                    tag_list = "None"
-                if characters:
-                    character_str = ', '.join([character.text for character in characters])
-                    character_list = character_str.split(', ')
-                else:
-                    character_list = "None"
-                if relationships:
-                    relationship_str = ', '.join([relationship.text for relationship in relationships])
-                    relationship_list = relationship_str.split(', ')
-                else:
-                    relationship_str = "None"
-                if dates:
-                    date_str = dates.text
-                else:
-                    date_str = "None"
-                if words:
-                    words_str = words.text
-                else:
-                    words_str = "None"
-                if url:
-                    url = "https://archiveofourown.org" + bookmark.select_one("h4 a:nth-of-type(1)")["href"]
-                else:
-                    url = "None"
+                    relationships = ""
+
+                # Check if the bookmark has a date
+                dates = dates.text if dates else ""
+
+                # Check if the bookmark has a word count
+                words = words.text if words else ""
+
+                # Check if the bookmark has a URL
+                url = "https://archiveofourown.org" + url if url else ""
 
                 # Write the data to the CSV file
-                csvwriter.writerow([url, title, author_str, fandom_str, warning_str, rating_str, category_str,
-                                    character_str, relationship_str, tag_str, words_str, date_str])
-            else:
-                print("Title not found for bookmark on page: ", page)
+                csvwriter.writerow([url, title, authors, fandoms, warnings, rating, categories,
+                                    characters, relationships, tags, words, dates])
 
-# Message at the end
+# Message at the end of the program
 print("All done!")
+print("Your bookmarks have been saved to " + username + "_bookmarks.csv")
