@@ -48,3 +48,11 @@ Here are the steps to split the delimited data you're interested in from one col
 - Click "Advanced Options" and pick "Split by Rows"
 
 You can now manipulate the data further as needed. Data visualization, statistical analysis, or even machine learning? The possibilities are endless!
+
+# Contact
+If you have any questions or feedback about this project, please feel free to reach out to me.
+- Email: mellodramat@gmail.com
+- GitHub: https://github.com/Dramatycznie
+
+# Bug reports and feature requests
+For bug reports and feature requests, please open an issue on my GitHub repository: https://github.com/Dramatycznie/AO3_Scraper/issues
