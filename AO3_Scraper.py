@@ -4,6 +4,7 @@ import time
 import csv
 from tqdm import tqdm
 from requests.exceptions import RequestException
+import re
 
 # Starting message
 print("")
@@ -15,9 +16,13 @@ while True:
     while True:
         # Get the user's AO3 username
         username = input("Your username: ")
-        print("Checking...")
         # Check if the input is valid
-        if not username.isalnum() or not len(username):
+        pattern = r"^[\w\d._-]+$"
+        if re.match(pattern, username):
+            # The input is valid
+            print("Checking...")
+        else:
+            # The input is invalid
             print("Invalid input: Please enter a valid username")
             continue
         # Check if the username exists
@@ -127,7 +132,7 @@ while True:
                 break
             end_time = time.time()
 
-        # Extract the data using the provided selectors
+            # Extract the data using the provided selectors
             for bookmark in soup.select("li.bookmark"):
                 title_element = bookmark.select_one("h4 a:nth-of-type(1)")
                 if title_element:
