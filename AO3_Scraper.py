@@ -12,7 +12,6 @@ print("Hello and welcome to AO3 Bookmark Scraper")
 print("")
 
 while True:
-
     while True:
         # Get the user's AO3 username
         username = input("Your username: ")
@@ -51,6 +50,9 @@ while True:
         try:
             # Get the starting page number to scrape from
             page1 = int(input("Start scraping from page: "))
+            if page1 < 1:
+                print("Invalid input: Please enter a valid number")
+                continue
             print("Checking...")
             # check if page1 is out of range
             try:
@@ -61,6 +63,9 @@ while True:
                 if len(bookmarks) == 0:
                     print("Start page is out of range")
                     continue
+            except ValueError:
+                print("Invalid input: Please enter a valid number")
+                continue
             except RequestException as e:
                 print("Error connecting to the server. Please check your internet connection and try again")
                 continue
@@ -69,6 +74,9 @@ while True:
                     # Get the ending page number to scrape to
                     page2 = int(input("Stop scraping at page: "))
                     print("Checking...")
+                    if page2 < 1:
+                        print("Invalid input: Please enter a valid number")
+                        continue
                     if page1 >= page2:
                         print("Invalid input: End page should be bigger than start page")
                         continue
@@ -80,6 +88,8 @@ while True:
                         if len(bookmarks) == 0:
                             print("End page is out of range")
                             continue
+                    except ValueError:
+                        print("Invalid input: Please enter a valid number")
                     except RequestException as e:
                         print("Error connecting to the server. Please check your internet connection and try "
                               "again")
@@ -253,7 +263,8 @@ while True:
     elif choice in ["no", "n"]:
         # Close the program
         print("Closing program...")
+        time.sleep(1)
         break
     # If the user enters anything other than yes or no, ask them to enter a valid input
     else:
-        print("Invalid input. Please enter 'yes' or 'no'.")
+        print("Invalid input. Please enter 'yes' or 'no'")
