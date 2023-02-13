@@ -1,8 +1,10 @@
 # AO3_Scraper
-This script is a web scraper that extracts bookmarks from the Archive of Our Own website (AO3) and saves the data to a CSV file. Works only on public bookmarks.
+This script is a web scraper that extracts bookmarks from the Archive of Our Own website (AO3) and saves the data to a CSV file. Now works on public and private bookmarks (if you log in).
 
 # Features
-- Extracts public bookmark data such as URL, title, authors, fandoms, warnings, ratings, categories, characters, relationships, tags, wordcounts and date bookmarked.
+- Extracts bookmark data such as URL, title, authors, fandoms, warnings, ratings, categories, characters, relationships, tags, wordcounts, date bookmarked, date updated.
+- Allows user to log into their AO3 accout to access private bookmarks.
+- Shows the number of pages available for scraping.
 - Allows user to specify a range of pages to scrape.
 - Allows user to specify an interval delay between requests.
 - Displays a progress bar while scraping.
@@ -20,7 +22,8 @@ This script is a web scraper that extracts bookmarks from the Archive of Our Own
 - Install `PIP`
 - Install the required dependencies by running `pip install -r requirements.txt` or install them individually by running `pip install requests`, `pip install beautifulsoup4`, `pip install tqdm` in command prompt or terminal. Before running the command, make sure that you are in the correct directory where the `requirements.txt` file is located. You can navigate to the correct directory in the command prompt or terminal by using the `cd` command.
 - Run the script by running `python ao3_scraper.py` in command prompt or terminal. Make sure you're in the correct directory.
-- When prompted, enter your AO3 username, the starting and ending page of bookmarks to scrape, and an interval delay between requests. Suggested delay time is 5 seconds or more.
+- When prompted, enter the username of an user whose bookmarks you want to scrape or log in.
+- When prompted, enter the starting and ending page of bookmarks to scrape, and an interval delay between requests. Suggested delay time is 5 seconds or more.
 - The script will begin scraping the bookmarks and will save the extracted data to a CSV file with the format of `username_bookmarks.csv`.
 
 Note: Be mindful of the delay time and the number of pages to scrape, as it may take a long time to execute and also it may put a lot of burden on AO3's server. A suggested delay time of 5 seconds or more is recommended to prevent overwhelming the server with requests. Consider longer delays if you're scraping a lot of data.
