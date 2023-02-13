@@ -22,7 +22,7 @@ This script is a web scraper that extracts bookmarks from the Archive of Our Own
 - Install `PIP`
 - Install the required dependencies by running `pip install -r requirements.txt` or install them individually by running `pip install requests`, `pip install beautifulsoup4`, `pip install tqdm` in command prompt or terminal. Before running the command, make sure that you are in the correct directory where the `requirements.txt` file is located. You can navigate to the correct directory in the command prompt or terminal by using the `cd` command.
 - Run the script by running `python ao3_scraper.py` in command prompt or terminal. Make sure you're in the correct directory.
-- When prompted, enter the username of an user whose bookmarks you want to scrape or log in.
+- When prompted, enter the username of an user whose bookmarks you want to scrape or log into your AO3 account.
 - When prompted, enter the starting and ending page of bookmarks to scrape, and an interval delay between requests. Suggested delay time is 5 seconds or more.
 - The script will begin scraping the bookmarks and will save the extracted data to a CSV file with the format of `username_bookmarks.csv`.
 
@@ -34,7 +34,8 @@ Instead of downloading the script, you can download the release AO3_Scraper.exe 
 - Download the release.
 - Unpack it.
 - Run `AO3_Scraper.exe`.
-- When prompted, enter your AO3 username, the starting and ending page of bookmarks to scrape, and an interval delay between requests. Suggested delay time is 5 seconds or more.
+- When prompted, enter the username of an user whose bookmarks you want to scrape or log into your AO3 account.
+- When prompted, enter the starting and ending page of bookmarks to scrape, and an interval delay between requests. Suggested delay time is 5 seconds or more.
 - The script will begin scraping the bookmarks and will save the extracted data to a CSV file with the format of `username_bookmarks.csv`.
 
 # What can be done with the data?
