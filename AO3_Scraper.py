@@ -1,12 +1,13 @@
-import requests
-from bs4 import BeautifulSoup
-import time
 import csv
-from tqdm import tqdm
-from requests.exceptions import RequestException
 import re
 import sys
-from colorama import init, Fore
+import time
+
+import requests
+from bs4 import BeautifulSoup
+from colorama import Fore
+from requests.exceptions import RequestException
+from tqdm import tqdm
 
 # Set global variables
 token = None
@@ -92,13 +93,13 @@ while True:
             if "Successfully logged in" in p.text:
                 # Login successful
                 print("")
-                print(+ Fore.GREEN + "Login successful" + Fore.RESET)
+                print(Fore.GREEN + "Login successful" + Fore.RESET)
                 break
                 # If the login is successful, break out of the loop
             else:
                 # Login failed
                 print("")
-                print(+ Fore.GREEN + "Login failed" + Fore.RESET)
+                print(Fore.GREEN + "Login failed" + Fore.RESET)
             continue
             # If the login is not successful, ask the user to enter the credentials again
 
@@ -486,8 +487,8 @@ while True:
             # Close the program
             print("")
             print("Thank you for using the AO3 Bookmark Scraper!")
-            time.sleep(1)
-            break
+            # Exit the program
+            sys.exit(2)
         # If the user enters something other than 'y' or 'n'
         else:
             # Ask the user to enter 'y' or 'n'
