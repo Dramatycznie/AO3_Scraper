@@ -26,7 +26,7 @@ This script is a web scraper that extracts bookmarks from the Archive of Our Own
 - When prompted, enter the starting and ending page of bookmarks to scrape, and an interval delay between requests. Suggested delay time is 5 seconds or more.
 - The script will begin scraping the bookmarks and will save the extracted data to a CSV file with the format of `username_bookmarks.csv`.
 
-Note: Be mindful of the delay time and the number of pages to scrape, as it may take a long time to execute and also it may put a lot of burden on AO3's server. A suggested delay time of 5 seconds or more is recommended to prevent overwhelming the server with requests. Consider longer delays if you're scraping a lot of data.
+Note: Be mindful of the delay time and the number of pages to scrape, as it may take a long time to execute and also it may put a lot of burden on AO3's servers. A suggested delay time of 5 seconds or more is recommended. Consider longer delays if you're scraping a lot of data.
 
 # Or use the relase instead
 Instead of downloading the script, you can download the release AO3_Scraper.exe which is the compiled version of the script. This allows you to run the script without having to install Python, PIP or any other dependencies.
