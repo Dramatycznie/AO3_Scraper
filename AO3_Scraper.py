@@ -16,7 +16,7 @@ ask_username = True
 username_or_email = None
 
 # Starting message
-print(Fore.GREEN + "")
+print(Fore.CYAN + "")
 print("Hello and welcome to AO3 Bookmark Scraper")
 print("")
 print("You can scrape public bookmarks of any user")
@@ -97,13 +97,13 @@ while True:
                 if "Successfully logged in" in p.text:
                     # Login successful
                     print("")
-                    print(Fore.GREEN + "Login successful" + Fore.RESET)
+                    print(Fore.CYAN + "Login successful" + Fore.RESET)
                     break
                     # If the login is successful, break out of the loop
                 else:
                     # Login failed
                     print("")
-                    print(Fore.GREEN + "Login failed" + Fore.RESET)
+                    print(Fore.CYAN + "Login failed" + Fore.RESET)
                 continue
                 # If the login is not successful, ask the user to enter the credentials again
 
@@ -127,7 +127,7 @@ while True:
                 else:
                     username = username_or_email
                     print("")
-                    print("Scraping bookmarks of user: " + Fore.GREEN + username + Fore.RESET)
+                    print("Scraping bookmarks of user: " + Fore.CYAN + username + Fore.RESET)
                     # If the user provided a username, scrape the bookmarks of that user
             else:
                 # If the user does not want to log in, ask the user to enter the username of the user whose bookmarks
@@ -186,7 +186,7 @@ while True:
                 bookmarks = soup.find_all("li", class_="bookmark")
                 if len(bookmarks) == 0:
                     print("")
-                    print("User " + Fore.GREEN + "{username}" + Fore.RESET + " has no bookmarks")
+                    print("User " + Fore.CYAN + "{username}" + Fore.RESET + " has no bookmarks")
                     # Close the program after enter is pressed
                     print("")
                     print("Please run the program again and enter an username that has bookmarks")
@@ -201,7 +201,7 @@ while True:
                     last_page = 1
 
                 print("")
-                print(f"The user has {Fore.GREEN}{last_page}{Fore.RESET} pages of bookmarks available")
+                print(f"The user has {Fore.CYAN}{last_page}{Fore.RESET} pages of bookmarks available")
                 break
             except requests.exceptions.HTTPError as e:
                 print("")
@@ -472,14 +472,14 @@ while True:
                     print("If the problem persists, consider longer delay times between requests.")
                     break
 
-        num_bookmarks = sum(1 for line in open(username + '_bookmarks.csv', encoding='utf-8'))
+        num_bookmarks = sum(1 for line in open(username + '_bookmarks.csv', encoding='utf-8')) - 1
 
         # Message at the end of the program
         print("")
         print("All done!")
-        print("Your bookmarks have been saved to {}{}{}_bookmarks.csv{}".format(Fore.GREEN, username, Fore.RESET,
+        print("Your bookmarks have been saved to {}{}{}_bookmarks.csv{}".format(Fore.CYAN, username, Fore.RESET,
                                                                                 Fore.RESET))
-        print("Scraped {}{}{} bookmarks.".format(Fore.GREEN, num_bookmarks, Fore.RESET))
+        print("Scraped {}{}{} bookmarks.".format(Fore.CYAN, num_bookmarks, Fore.RESET))
 
         while True:
             # Ask the user if they want to start scraping again
@@ -496,6 +496,8 @@ while True:
                 # Close the program
                 print("")
                 print("Thank you for using the AO3 Bookmark Scraper!")
+                print("Press", Fore.CYAN + "Enter" + Fore.RESET, "to exit...", end='')
+                input()
                 sys.exit()
 
             # If the user enters something other than that
