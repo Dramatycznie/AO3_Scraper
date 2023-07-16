@@ -21,6 +21,7 @@ print("Hello and welcome to AO3 Bookmark Scraper")
 print("")
 print("You can scrape public bookmarks of any user")
 print("Or scrape your private bookmarks if you log in")
+print("Please note that some works may only be visible to logged-in users")
 print("Happy scraping!" + Fore.RESET)
 
 while True:
