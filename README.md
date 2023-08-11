@@ -1,6 +1,14 @@
 # AO3_Scraper
 This script is a web scraper that extracts bookmarks from the Archive of Our Own website (AO3) and saves the data to a CSV file. Now works on public and private bookmarks (if you log in).
 
+## Table of Contents
+- [Features](#features)
+- [Dependencies](#dependencies)
+- [How to Use](#how-to-use)
+- [What Can Be Done with the Data?](#what-can-be-done-with-the-data)
+- [Contact](#contact)
+- [Bug Reports and Feature Requests](#bug-reports-and-feature-requests)
+
 # Features
 - Extracts bookmark data such as URL, title, authors, fandoms, warnings, ratings, categories, characters, relationships, tags, wordcounts, date bookmarked, date updated.
 - Allows user to log into their AO3 accout to access private bookmarks.
@@ -18,6 +26,9 @@ This script is a web scraper that extracts bookmarks from the Archive of Our Own
 - tqdm library
 
 # How to use
+Run the script yourself or use the relase.
+
+### Runing the script
 - Install `Python 3`
 - Install `PIP`
 - Install the required dependencies by running `pip install -r requirements.txt` or install them individually by running `pip install requests`, `pip install beautifulsoup4`, `pip install tqdm` in command prompt or terminal. Before running the command, make sure that you are in the correct directory where the `requirements.txt` file is located. You can navigate to the correct directory in the command prompt or terminal by using the `cd` command.
@@ -28,7 +39,7 @@ This script is a web scraper that extracts bookmarks from the Archive of Our Own
 
 Note: Be mindful of the delay time and the number of pages to scrape, as it may take a long time to execute and also it may put a lot of burden on AO3's servers. A suggested delay time of 5 seconds or more is recommended. Consider longer delays if you're scraping a lot of data.
 
-# Or use the relase instead
+### Use the relase
 Instead of downloading the script, you can download the release AO3_Scraper.exe which is the compiled version of the script. This allows you to run the script without having to install Python, PIP or any other dependencies.
 
 - Download the release.
