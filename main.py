@@ -1,11 +1,17 @@
+import sys
 import csv
 import re
 import time
-
+import socket
 import requests
 from bs4 import BeautifulSoup
 from colorama import Fore
 from tqdm import tqdm
+import logging
+
+# Set up logging
+logging.basicConfig(filename='app.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 
 # Prints the welcome message
@@ -24,6 +30,7 @@ def print_welcome():
 # Prints the goodbye message and exits the program
 def print_goodbye():
     print(Fore.CYAN + "\nThank you for using AO3 Bookmark Scraper!" + Fore.RESET)
+    logger.info("Exiting the program.")
     input("\nPress Enter to exit.")
 
 
@@ -34,11 +41,13 @@ def ask_if_log_in():
                             "that are only visible to logged in users.\n1. Yes\n2. No\n")
 
         if user_choice == "1":
+            logger.info("User chose to log in.")
             return True
         elif user_choice == "2":
+            logger.info("User chose not to log in.")
             return False
         else:
-            print("\nInvalid input. Please enter 1 or 2.")
+            handle_invalid_input("Please enter a valid choice. 1 or 2.")
 
 
 # Creates a session and returns the authenticity token
@@ -55,22 +64,23 @@ def create_session():
         token = soup.find('input', {'name': 'authenticity_token'})
 
         if token is None:
-            print("\nAuthenticity token not found. Cannot log in.")
+            handle_token_not_found()
             return None, None
         else:
             token = token['value']
             print("\nSession created.")
+            logger.info("Session created.")
             return token, session
 
-    except requests.exceptions.RequestException as e:
-        # Handle errors
-        print(f"\nAn error occurred while making the GET request: {e}")
+    except requests.exceptions.RequestException as error:
+        handle_request_error(error)
         return None, None
 
 
+# Gets username/email and password from the user and logs in
 def get_login_info(token, session):
     if session is None or token is None:
-        print("\nSession or token is None. Cannot log in.")
+        handle_token_not_found()
         return False
 
     while True:
@@ -92,18 +102,18 @@ def get_login_info(token, session):
             # Make a POST request
             response = session.post("https://archiveofourown.org/users/login", data=payload)
             response.raise_for_status()
-        except requests.exceptions.RequestException as e:
-            # Handle request errors
-            print(f"\nAn error occurred while making the POST request: {e}")
+
+        except requests.exceptions.RequestException as error:
+            handle_request_error(error)
             continue
 
         # Check if login was successful
         if "Successfully logged in" in response.text:
             print(Fore.CYAN + "\nLogin successful." + Fore.RESET)
+            logger.info("Login successful.")
             return True
         else:
-            print(Fore.CYAN + "\nLogin failed." + Fore.RESET)
-            print("\nPlease try again.")
+            handle_invalid_input("Login failed. Please try again.")
 
 
 # Gets the username of the user whose bookmarks are to be scraped
@@ -111,7 +121,7 @@ def get_username(logged_in):
     while True:
         username = input("\nEnter the username of the user whose bookmarks you want to scrape: ")
         if not username:
-            print("\nPlease enter a username.")
+            handle_invalid_input("Please enter a username.")
             continue
 
         print("\nChecking if the username is valid...")
@@ -119,8 +129,9 @@ def get_username(logged_in):
         # Check if the username follows guidelines (3-40 characters, alphanumeric and underscore)
         username_pattern = r"^[A-Za-z0-9_]{3,40}$"
         if not re.match(username_pattern, username):
-            print("\nInvalid input: Please enter a valid username.")
+            handle_invalid_input("Please enter a valid username.")
             continue
+        logger.info(f"{username} is a valid username.")
 
         try:
             print("\nChecking if username exists...")
@@ -131,19 +142,20 @@ def get_username(logged_in):
             if len(soup.find_all("div", class_="user")) > 0:
                 print(f"\nScraping bookmarks of user: {Fore.CYAN}{username}{Fore.RESET}")
                 url = f"https://archiveofourown.org/users/{username}/bookmarks"
+
                 if logged_in:
                     url += "?private=true"
+                logger.info(f"{username} exists. URL: {url}")
                 return username, url
             else:
-                print(f"\nUsername {username} does not exist or the user has no bookmarks to be scraped. "
-                      f"Please enter a valid username.")
+                handle_invalid_input(f"Username {username} does not exist. Please enter a valid username.")
 
-        except requests.exceptions.RequestException as e:
-            # Handle request errors
-            print(f"\nAn error occurred while making the GET request: {e} \nPlease try again.")
+        except requests.exceptions.RequestException as error:
+            handle_request_error(error)
+            continue
 
 
-# Gets the number of pages of bookmarks available
+# Gets the number of pages of bookmarks available (with error handling)
 def get_available_pages(username, session, url):
     while True:
         try:
@@ -155,7 +167,7 @@ def get_available_pages(username, session, url):
             bookmarks = soup.find_all("li", class_="bookmark")
 
             if len(bookmarks) == 0:
-                print(f"\nUser {Fore.CYAN}{username}{Fore.RESET} has no bookmarks.\n")
+                handle_invalid_input(f"{username} has no bookmarks.")
                 return None
 
             # Extract pagination information
@@ -164,33 +176,35 @@ def get_available_pages(username, session, url):
                 pagination = pagination.find_all("li")
                 last_page = int(pagination[-2].text)
             else:
-                last_page = 1
+                handle_parse_error()
+                return None  # Return None in case of pagination parse error
 
             print(f"\nThe user has {Fore.CYAN}{last_page}{Fore.RESET} pages of bookmarks available.")
-            break
+            logger.info(f"{username} has {last_page} pages of bookmarks available.")
+            return last_page
 
-        except requests.exceptions.RequestException as e:
-            # Handle request errors
-            print("Error connecting to the server:", e)
-            break
+        except requests.exceptions.RequestException as error:
+            handle_request_error(error)
+            continue
 
         except (AttributeError, ValueError):
-            # Handle parsing errors
-            print("Error parsing the HTML: pagination element not found.")
-            break
+            handle_parse_error()
+            return None  # Return None in case of parse error
 
 
-# Gets the starting and ending page numbers from the user
+# Gets the page range from the user
 def get_page_range(session, url):
     while True:
         try:
             start_page = int(input("\nEnter the starting page number: "))
-            end_page = int(input("\nEnter the ending page number: "))
+            if start_page < 1:
+                handle_invalid_input("The starting page number must be positive.")
+                continue
 
-            if start_page < 1 or end_page < 1 or end_page < start_page:
-                print(
-                    "\nInvalid page numbers. Please enter positive integers with the ending page greater than or "
-                    "equal to the starting page.")
+            end_page = int(input("\nEnter the ending page number: "))
+            if end_page < 1 or end_page < start_page:
+                handle_invalid_input("The ending page number must be positive and greater than the starting page "
+                                     "number.")
                 continue
 
             # Check if the starting page exists
@@ -198,7 +212,7 @@ def get_page_range(session, url):
             response.raise_for_status()
 
             if response.status_code != 200:
-                print(f"\nStarting page {start_page} does not exist.")
+                handle_invalid_input(f"Starting page {start_page} does not exist.")
                 continue
 
             # Extract pagination information
@@ -207,12 +221,11 @@ def get_page_range(session, url):
                 pagination = pagination.find_all("li")
                 last_page = int(pagination[-2].text)
                 if start_page > last_page:
-                    print(
-                        f"\nStarting page {start_page} is out of range. Available starting pages are "
-                        f"those between 1 - {last_page}.")
+                    handle_invalid_input(f"Starting page {start_page} is out of range. Available starting pages are"
+                                         f" those between 1 - {last_page}.")
                     continue
             else:
-                print("\nPagination information not found. Cannot determine last page.")
+                handle_parse_error()
                 continue
 
             # Check if the ending page exists
@@ -220,17 +233,18 @@ def get_page_range(session, url):
             response.raise_for_status()
 
             if response.status_code != 200:
-                print(f"\nEnding page {end_page} does not exist.")
+                handle_invalid_input(f"Ending page {end_page} does not exist.")
                 continue
 
             if end_page > last_page:
-                print(f"\nEnding page {end_page} is out of range. The last available page is {last_page}.")
+                handle_invalid_input(f"Ending page {end_page} is out of range. The last available page is {last_page}.")
                 continue
 
+            logger.info(f"Page range: {start_page} - {end_page}")
             return start_page, end_page
 
         except ValueError:
-            print("\nInvalid input, please enter valid page numbers.")
+            handle_invalid_input("Please enter a valid number.")
 
 
 # Gets the delay between requests
@@ -241,11 +255,13 @@ def get_delay():
             print("Consider longer delays if you are scraping a large number of pages.")
             delay = int(input("Should be at least 5: "))
             if delay < 5:
-                print("\nInvalid input: Please enter a valid number.")
+                handle_invalid_input("Please enter a delay of at least 5 seconds.")
                 continue
             break
         except ValueError:
-            print("\nInvalid input: Please enter a valid number.")
+            handle_invalid_input("Please enter a valid number.")
+
+    logger.info(f"Delay: {delay} seconds")
     return delay
 
 
@@ -263,11 +279,13 @@ def get_element_text_list(elements):
 def scrape_bookmarks(username, start_page, end_page, session, delay, base_url):
     with open(username + '_bookmarks.csv', 'w', newline='', encoding='utf-8') as csvfile:
         csvwriter = csv.writer(csvfile)
+        logger.info(f"CSV file created: {username}_bookmarks.csv")
 
         # Write header row to CSV file
         csvwriter.writerow(
             ['URL', 'Title', 'Authors', 'Fandoms', 'Warnings', 'Rating', 'Categories', 'Characters',
              'Relationships', 'Tags', 'Words', 'Date Bookmarked', 'Date Updated'])
+        logger.info("Header row written to CSV file")
 
         num_bookmarks = 0
         total_pages = end_page - start_page + 1
@@ -280,8 +298,9 @@ def scrape_bookmarks(username, start_page, end_page, session, delay, base_url):
                 response = session.get(page_url) if session else requests.get(page_url)
                 time.sleep(delay)
                 soup = BeautifulSoup(response.text, 'html.parser')
-            except requests.exceptions.RequestException as e:
-                tqdm.write("Error: " + str(e))  # Use tqdm.write to ensure clean line break
+                logger.info(f"Scraping page {page}")
+            except (requests.exceptions.RequestException, socket.timeout) as error:
+                handle_request_error(error)
                 break
 
             # Loop through each bookmark on the page
@@ -312,6 +331,7 @@ def scrape_bookmarks(username, start_page, end_page, session, delay, base_url):
                 num_bookmarks += 1
 
         # Print completion message
+        logger.info(f"Scrapping complete. Scraped {num_bookmarks} bookmarks.")
         print("\nAll done! \nYour bookmarks have been saved to {}{}{}_bookmarks.csv{}.".format(Fore.CYAN,
                                                                                                username, Fore.RESET,
                                                                                                Fore.RESET))
@@ -323,44 +343,76 @@ def ask_again():
     while True:
         answer = input("\nWould you like to try again? \n1. Yes \n2. No\n")
         if answer == "1":
+            logger.info("User chose to try again.")
             return True
         elif answer == "2":
+            logger.info("User chose not to try again.")
             return False
         else:
-            print("\nInvalid input, please enter 1 or 2.")
+            handle_invalid_input("Please enter a valid choice. 1 or 2.")
+
+
+def handle_invalid_input(context):
+    logger.error(f"Invalid input: {context}")
+    print(f"\nInvalid input: {context}")
+
+
+def handle_request_error(error):
+    logger.error(f"An error occurred while making the request: {error}")
+    print("\nAn error occurred while making the request. Please try again later. Check the logs for more details.")
+
+
+def handle_token_not_found():
+    logger.error("Authenticity token not found. Cannot log in.")
+    print("\nAn error occurred while logging in. Please try again later.Check the logs for more details.")
+
+
+def handle_parse_error():
+    logger.error("Error parsing HTML.")
+    print("\nAn error occurred while parsing the HTML. Please try again later. Check the logs for more details.")
+
+
+def handle_keyboard_interrupt():
+    logger.error("Keyboard Interrupt detected.")
+    print("\nKeyboardInterrupt received. Exiting gracefully...")
+    sys.exit(0)
 
 
 # Main function
 def main():
-    print_welcome()
-    # Ask if the user wants to log in (for now here)
-    log_in = ask_if_log_in()
-    while True:
-        # Initialize variables (important for when the user doesn't log in)
-        token, session = None, None
+    try:
+        print_welcome()
+        # Ask if the user wants to log in (for now here)
+        log_in = ask_if_log_in()
+        while True:
+            # Initialize variables (important for when the user doesn't log in)
+            token, session = None, None
 
-        if log_in:
-            # If the user wants to log in, create a session and get the login info, set logged_in to True
-            token, session = create_session()
-            get_login_info(token, session)
-            logged_in = True
-        else:
-            # If the user doesn't want to log in, set logged_in to False
-            logged_in = False
+            if log_in:
+                # If the user wants to log in, create a session and get the login info, set logged_in to True
+                token, session = create_session()
+                get_login_info(token, session)
+                logged_in = True
+            else:
+                # If the user doesn't want to log in, set logged_in to False
+                logged_in = False
 
-        # Get the username, available pages, page range, and delay
-        username, url = get_username(logged_in)
-        get_available_pages(username, session, url)
-        start_page, end_page = get_page_range(session, url)
-        delay = get_delay()
+            # Get the info needed to scrape the bookmarks
+            username, url = get_username(logged_in)
+            if get_available_pages(username, session, url):
+                start_page, end_page = get_page_range(session, url)
+                delay = get_delay()
 
-        # Scrape the bookmarks
-        scrape_bookmarks(username, start_page, end_page, session, delay, url)
+                # Scrape the bookmarks
+                scrape_bookmarks(username, start_page, end_page, session, delay, url)
 
-        if not ask_again():
-            # If the user doesn't want to try again, print goodbye message and exit the loop
-            print_goodbye()
-            break
+                if not ask_again():
+                    # If the user doesn't want to try again, print goodbye message and exit the loop
+                    print_goodbye()
+                    break
+
+    except KeyboardInterrupt:
+        handle_keyboard_interrupt()
 
 
 if __name__ == "__main__":
