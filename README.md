@@ -12,6 +12,7 @@ This script is a web scraper that extracts bookmarks from the Archive of Our Own
 # Features
 - Extracts bookmark data such as URL, title, authors, fandoms, warnings, ratings, categories, characters, relationships, tags, wordcounts, date bookmarked, date updated.
 - Allows user to log into their AO3 accout to access private bookmarks.
+- Implements logging for better error tracking and troubleshooting.
 - Shows the number of pages available for scraping.
 - Allows user to specify a range of pages to scrape.
 - Allows user to specify an interval delay between requests.
