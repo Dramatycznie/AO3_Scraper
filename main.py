@@ -191,7 +191,7 @@ def get_available_pages(username, session, url):
 
         except (AttributeError, ValueError):
             handle_parse_error()
-            return None  # Return None in case of parse error
+            return None
 
 
 # Gets the page range from the user
@@ -260,6 +260,7 @@ def get_delay():
                 handle_invalid_input("Please enter a delay of at least 5 seconds.")
                 continue
             break
+
         except ValueError:
             handle_invalid_input("Please enter a valid number.")
 
@@ -277,8 +278,7 @@ def get_element_text_list(elements):
     return [element.text.strip() for element in elements] if elements else []
 
 
-# Scrapes the bookmarks of a user, needs error handling for "Retry later" message, also author is missing if
-# the author is anonymous
+# Scrapes the bookmarks of a user, author is missing if the author is anonymous
 def scrape_bookmarks(username, start_page, end_page, session, delay):
     with open(username + '_bookmarks.csv', 'w', newline='', encoding='utf-8') as csvfile:
         csvwriter = csv.writer(csvfile)
@@ -302,8 +302,12 @@ def scrape_bookmarks(username, start_page, end_page, session, delay):
                 time.sleep(delay)
                 soup = BeautifulSoup(response.text, 'html.parser')
                 logger.info(f"Scraping page {page}")
+
             except (requests.exceptions.RequestException, socket.timeout) as error:
                 handle_request_error(error)
+                return
+
+            if handle_retry_later(response):
                 return
 
             # Loop through each bookmark on the page
@@ -363,26 +367,40 @@ def ask_again():
             handle_invalid_input("Please enter a valid choice. 1 or 2.")
 
 
+# Handles the "Retry later" message
+def handle_retry_later(response):
+    if "Retry later" in response.text:
+        logger.error("Received 'Retry later' message. Too many requests, stopping scraping.")
+        print("\nReceived 'Retry later' message. Please try again later, consider increasing the delay.")
+        return True
+    return False
+
+
+# Handles invalid input
 def handle_invalid_input(context):
     logger.error(f"Invalid input: {context}")
     print(f"\nInvalid input: {context}")
 
 
+# Handles request errors
 def handle_request_error(error):
     logger.error(f"An error occurred while making the request: {error}")
     print("\nAn error occurred while making the request. Please try again later. Check the logs for more details.")
 
 
+# Handles token not found error
 def handle_token_not_found():
     logger.error("Authenticity token not found. Cannot log in.")
     print("\nAn error occurred while logging in. Please try again later.Check the logs for more details.")
 
 
+# Handles parse errors
 def handle_parse_error():
     logger.error("Error parsing HTML.")
     print("\nAn error occurred while parsing the HTML. Please try again later. Check the logs for more details.")
 
 
+# Handles keyboard interrupts
 def handle_keyboard_interrupt():
     logger.error("Keyboard Interrupt detected.")
     print("\nKeyboardInterrupt received. Exiting gracefully...")
