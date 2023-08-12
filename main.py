@@ -3,6 +3,7 @@ import csv
 import re
 import time
 import socket
+
 import requests
 from bs4 import BeautifulSoup
 from colorama import Fore
@@ -12,6 +13,7 @@ import logging
 # Set up logging
 logging.basicConfig(filename='app.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+logger.info("Program started.")
 
 
 # Prints the welcome message
@@ -275,8 +277,9 @@ def get_element_text_list(elements):
     return [element.text.strip() for element in elements] if elements else []
 
 
-# Scrapes the bookmarks of a user
-def scrape_bookmarks(username, start_page, end_page, session, delay, base_url):
+# Scrapes the bookmarks of a user, needs error handling for "Retry later" message, also author is missing if
+# the author is anonymous
+def scrape_bookmarks(username, start_page, end_page, session, delay):
     with open(username + '_bookmarks.csv', 'w', newline='', encoding='utf-8') as csvfile:
         csvwriter = csv.writer(csvfile)
         logger.info(f"CSV file created: {username}_bookmarks.csv")
@@ -293,15 +296,15 @@ def scrape_bookmarks(username, start_page, end_page, session, delay, base_url):
         # Loop through pages and scrape bookmarks
         for page in tqdm(range(start_page, end_page + 1), total=total_pages, desc="Scraping"):
             try:
-                # Construct page URL
-                page_url = f"{base_url}?page={page}"
-                response = session.get(page_url) if session else requests.get(page_url)
+                response = session.get(
+                    f"https://archiveofourown.org/users/{username}/bookmarks?private=true&page={page}") if \
+                    session else requests.get(f"https://archiveofourown.org/users/{username}/bookmarks?page={page}")
                 time.sleep(delay)
                 soup = BeautifulSoup(response.text, 'html.parser')
                 logger.info(f"Scraping page {page}")
             except (requests.exceptions.RequestException, socket.timeout) as error:
                 handle_request_error(error)
-                break
+                return
 
             # Loop through each bookmark on the page
             for bookmark in soup.select("li.bookmark"):
@@ -314,7 +317,7 @@ def scrape_bookmarks(username, start_page, end_page, session, delay, base_url):
                 authors = get_element_text_list(bookmark.select("a[rel='author']"))
                 fandoms = get_element_text_list(bookmark.select(".fandoms a"))
                 warnings = get_element_text_list(bookmark.select("li.warnings"))
-                rating = get_element_text(bookmark.select_one("span.rating"))
+                ratings = get_element_text_list(bookmark.select_one("span.rating"))
                 categories = get_element_text_list(bookmark.select("span.category"))
                 words = get_element_text(bookmark.select_one("dd.words") or bookmark.select_one("dd"))
                 tags = get_element_text_list(bookmark.select("li.freeforms"))
@@ -324,11 +327,19 @@ def scrape_bookmarks(username, start_page, end_page, session, delay, base_url):
                 url = "https://archiveofourown.org" + bookmark.select_one("h4 a:nth-of-type(1)")["href"]
                 date_updated = get_element_text(bookmark.select_one("p.datetime"))
 
+                # Replace commas with semicolons in ratings and categories (important when bookmark is a series)
+                ratings = [rating.replace(',', ';') for rating in ratings]
+                categories = [category.replace(',', ';') for category in categories]
+
                 # Write bookmark data to CSV
-                csvwriter.writerow([url, title, '; '.join(authors), '; '.join(fandoms), '; '.join(warnings),
-                                    rating, '; '.join(categories), '; '.join(characters), '; '.join(relationships),
-                                    '; '.join(tags), words, date_bookmarked, date_updated])
+                csvwriter.writerow([
+                    url, title, '; '.join(authors), '; '.join(fandoms), '; '.join(warnings),
+                    '; '.join(ratings), '; '.join(categories), '; '.join(characters),
+                    '; '.join(relationships), '; '.join(tags), words, date_bookmarked, date_updated
+                ])
+
                 num_bookmarks += 1
+                logger.info(f"Bookmark {num_bookmarks}: {title} written to CSV file")  # delete if everything works
 
         # Print completion message
         logger.info(f"Scrapping complete. Scraped {num_bookmarks} bookmarks.")
@@ -404,7 +415,7 @@ def main():
                 delay = get_delay()
 
                 # Scrape the bookmarks
-                scrape_bookmarks(username, start_page, end_page, session, delay, url)
+                scrape_bookmarks(username, start_page, end_page, session, delay)
 
                 if not ask_again():
                     # If the user doesn't want to try again, print goodbye message and exit the loop
