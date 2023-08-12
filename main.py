@@ -317,7 +317,7 @@ def scrape_bookmarks(username, start_page, end_page, session, delay):
                     title = get_element_text(title_element)
                 else:
                     continue
-
+                    
                 authors = get_element_text_list(bookmark.select("a[rel='author']"))
                 fandoms = get_element_text_list(bookmark.select(".fandoms a"))
                 warnings = get_element_text_list(bookmark.select("li.warnings"))
@@ -337,13 +337,12 @@ def scrape_bookmarks(username, start_page, end_page, session, delay):
 
                 # Write bookmark data to CSV
                 csvwriter.writerow([
-                    url, title, '; '.join(authors), '; '.join(fandoms), '; '.join(warnings),
+                    url, title, '; '.join(authors) if authors else 'Anonymous', '; '.join(fandoms), '; '.join(warnings),
                     '; '.join(ratings), '; '.join(categories), '; '.join(characters),
                     '; '.join(relationships), '; '.join(tags), words, date_bookmarked, date_updated
                 ])
 
                 num_bookmarks += 1
-                logger.info(f"Bookmark {num_bookmarks}: {title} written to CSV file")  # delete if everything works
 
         # Print completion message
         logger.info(f"Scrapping complete. Scraped {num_bookmarks} bookmarks.")
