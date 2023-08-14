@@ -3,6 +3,7 @@ import csv
 import re
 import time
 import socket
+import atexit
 
 import requests
 from bs4 import BeautifulSoup
@@ -31,8 +32,7 @@ def print_welcome():
 
 # Prints the goodbye message and exits the program
 def print_goodbye():
-    print(Fore.CYAN + "\nThank you for using AO3 Bookmark Scraper!" + Fore.RESET)
-    logger.info("Exiting the program.")
+    print(Fore.CYAN + "\nThank you for using AO3 Scraper!" + Fore.RESET)
     input("\nPress Enter to exit.")
 
 
@@ -406,23 +406,29 @@ def handle_keyboard_interrupt():
     sys.exit(0)
 
 
+# Logs the closure of the program
+def log_program_closure():
+    logger.info("Program closed.")
+
+
+# When the program closes, log it
+atexit.register(log_program_closure)
+
+
 # Main function
 def main():
     try:
         print_welcome()
         # Ask if the user wants to log in (for now here)
         log_in = ask_if_log_in()
-        while True:
-            # Initialize variables (important for when the user doesn't log in)
-            token, session = None, None
+        token, session = None, None  # Initialize variables for the session
 
-            if log_in:
-                # If the user wants to log in, create a session and get the login info, set logged_in to True
+        while True:
+            if log_in and session is None:  # Create a session if logging in
                 token, session = create_session()
                 get_login_info(token, session)
                 logged_in = True
             else:
-                # If the user doesn't want to log in, set logged_in to False
                 logged_in = False
 
             # Get the info needed to scrape the bookmarks
