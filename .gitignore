@@ -1,2 +1,5 @@
 # Ignore the .idea/ directory
 .idea/
+
+# Ignore Python compiled bytecode files
+__pycache__/
