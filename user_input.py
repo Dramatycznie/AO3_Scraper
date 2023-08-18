@@ -24,7 +24,7 @@ def ask_if_log_in(logger):
 # Asks if the user wants to log in
 def ask_again(logger):
     while True:
-        answer = input("\nWould you like to try again? \n1. Yes \n2. No\n")
+        answer = input("\nWould you like to run the program again? \n1. Yes \n2. No\n")
         if answer == "1":
             logger.info("User chose to try again.")
             return True
@@ -211,9 +211,7 @@ def get_page_range(session, url, logger):
 def get_delay(logger):
     while True:
         try:
-            print("\nEnter delay between requests (in seconds).")
-            print("Consider longer delays if you are scraping a large number of pages.")
-            delay = int(input("Should be at least 5: "))
+            delay = int(input("\nEnter an interval delay between requests. Should be at least 5 seconds: "))
             if delay < 5:
                 error_handling.handle_invalid_input("Please enter a delay of at least 5 seconds.", logger)
                 continue
