@@ -11,7 +11,7 @@ This script is a web scraper that extracts bookmarks from the Archive of Our Own
 
 # Features
 - Extracts bookmark data such as URL, title, authors, fandoms, warnings, ratings, categories, characters, relationships, tags, wordcounts, date bookmarked, date updated.
-- Allows user to log into their AO3 accout to access private bookmarks.
+- Allows user to log into their AO3 account to access private bookmarks.
 - Implements logging for better error tracking and troubleshooting.
 - Shows the number of pages available for scraping.
 - Allows user to specify a range of pages to scrape.
@@ -27,26 +27,26 @@ This script is a web scraper that extracts bookmarks from the Archive of Our Own
 - tqdm library
 
 # How to use
-Run the script yourself or use the relase.
+Run the script yourself or use the release.
 
-### Runing the script
+### Running the script
 - Install `Python 3`
 - Install `PIP`
 - Install the required dependencies by running `pip install -r requirements.txt` or install them individually by running `pip install requests`, `pip install beautifulsoup4`, `pip install tqdm` in command prompt or terminal. Before running the command, make sure that you are in the correct directory where the `requirements.txt` file is located. You can navigate to the correct directory in the command prompt or terminal by using the `cd` command.
 - Run the script by running `python main.py` in command prompt or terminal. Make sure you're in the correct directory.
-- When prompted, enter the username of an user whose bookmarks you want to scrape or log into your AO3 account.
+- When prompted, enter the username of a user whose bookmarks you want to scrape or log into your AO3 account.
 - When prompted, enter the starting and ending page of bookmarks to scrape, and an interval delay between requests. Suggested delay time is 5 seconds or more.
 - The script will begin scraping the bookmarks and will save the extracted data to a CSV file with the format of `username_bookmarks.csv`.
 
-Note: Be mindful of the delay time and the number of pages to scrape, as it may take a long time to execute and also it may put a lot of burden on AO3's servers. A suggested delay time of 5 seconds or more is recommended. Consider longer delays if you're scraping a lot of data.
+Note: Be mindful of the delay time and the number of pages to scrape, as it may take a long time to execute, and also it may put a lot of burden on AO3's servers. A suggested delay time of 5 seconds or more is recommended. Consider longer delays if you're scraping a lot of data.
 
-### Use the relase
+### Use the release
 Instead of downloading the script, you can download the release AO3_Scraper.exe which is the compiled version of the script. This allows you to run the script without having to install Python, PIP or any other dependencies.
 
 - Download the release.
 - Unpack it.
 - Run `AO3_Scraper.exe`.
-- When prompted, enter the username of an user whose bookmarks you want to scrape or log into your AO3 account.
+- When prompted, enter the username of a user whose bookmarks you want to scrape or log into your AO3 account.
 - When prompted, enter the starting and ending page of bookmarks to scrape, and an interval delay between requests. Suggested delay time is 5 seconds or more.
 - The script will begin scraping the bookmarks and will save the extracted data to a CSV file with the format of `username_bookmarks.csv`.
 
