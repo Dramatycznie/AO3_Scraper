@@ -5,7 +5,7 @@ import requests
 from bs4 import BeautifulSoup
 from colorama import Fore
 from tqdm import tqdm
-import error_handling
+from . import error_handling
 
 
 # Gets the text of an element
