@@ -6,6 +6,7 @@ import user_input
 import user_interface
 import scraping_utils
 import session_utils
+import downloading_utils
 
 
 # Main function
@@ -14,7 +15,6 @@ def main():
     atexit.register(logging_utils.log_program_closure, logger)
     try:
         user_interface.print_welcome()
-        # Ask if the user wants to log in (for now here)
         log_in = user_input.ask_if_log_in(logger)
         token, session = None, None  # Initialize variables for the session
 
@@ -26,17 +26,22 @@ def main():
             else:
                 logged_in = False
 
+            action = user_input.download_or_scrape(logger)
+
             # Get the info needed to scrape the bookmarks
-            username, url = user_input.get_username(logged_in, logger)
+            username, url = user_input.get_username(logged_in, action, logger)
             if user_input.get_available_pages(username, session, url, logger):
                 start_page, end_page = user_input.get_page_range(session, url, logger)
                 delay = user_input.get_delay(logger)
 
-                # Scrape the bookmarks
-                scraping_utils.scrape_bookmarks(username, start_page, end_page, session, delay, logger)
+                if action == "download":
+                    chosen_format = user_input.get_download_format(logger)
+                    downloading_utils.download_bookmarks(url, start_page, end_page, session, chosen_format, delay,
+                                                         logger)
+                elif action == "scrape":
+                    scraping_utils.scrape_bookmarks(username, start_page, end_page, session, delay, logger)
 
                 if not user_input.ask_again(logger):
-                    # If the user doesn't want to try again, print goodbye message and exit the loop
                     user_interface.print_goodbye()
                     break
 

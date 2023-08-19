@@ -41,6 +41,8 @@ def get_login_info(token, session, logger):
         error_handling.handle_token_not_found(logger)
         return False
 
+    response = None
+
     while True:
         # Prompt for user input
         username_or_email = input("\nEnter your username or email: ")
@@ -63,7 +65,6 @@ def get_login_info(token, session, logger):
 
         except requests.exceptions.RequestException as error:
             error_handling.handle_request_error(error, logger)
-            continue
 
         # Check if login was successful
         if "Successfully logged in" in response.text:
@@ -75,9 +76,9 @@ def get_login_info(token, session, logger):
 
 
 # Gets the username of the user whose bookmarks are to be scraped
-def get_username(logged_in, logger):
+def get_username(logged_in, action, logger):
     while True:
-        username = input("\nEnter the username of the user whose bookmarks you want to scrape: ")
+        username = input(f"\nEnter the username of the user whose bookmarks you want to {action}: ")
         if not username:
             error_handling.handle_invalid_input("Please enter a username.", logger)
             continue
@@ -98,7 +99,10 @@ def get_username(logged_in, logger):
 
             soup = BeautifulSoup(response.text, 'html.parser')
             if len(soup.find_all("div", class_="user")) > 0:
-                print(f"\nScraping bookmarks of user: {Fore.CYAN}{username}{Fore.RESET}")
+                if action == "scrape":
+                    print(f"\nScraping bookmarks of user: {Fore.CYAN}{username}{Fore.RESET}")
+                elif action == "download":
+                    print(f"\nDownloading bookmarks of user: {Fore.CYAN}{username}{Fore.RESET}")
                 url = f"https://archiveofourown.org/users/{username}/bookmarks"
 
                 if logged_in:
@@ -111,7 +115,6 @@ def get_username(logged_in, logger):
 
         except requests.exceptions.RequestException as error:
             error_handling.handle_request_error(error, logger)
-            continue
 
 
 # Gets the number of pages of bookmarks available (with error handling)
@@ -144,7 +147,6 @@ def get_available_pages(username, session, url, logger):
 
         except requests.exceptions.RequestException as error:
             error_handling.handle_request_error(error, logger)
-            continue
 
         except (AttributeError, ValueError):
             error_handling.handle_parse_error(logger)
@@ -223,3 +225,28 @@ def get_delay(logger):
     logger.info(f"Delay: {delay} seconds")
     return delay
 
+
+# Gets the input for the download or scrape choice
+def download_or_scrape(logger):
+    while True:
+        choice = input("Do you want to scrape the bookmarks or download them?\n1. Scrape\n2. Download\n")
+        choices = ['1', '2']
+        if choice in choices:
+            action = ["scrape", "download"][int(choice) - 1]
+            logger.info(f"User chose to {action} bookmarks.")
+            return action
+        else:
+            error_handling.handle_invalid_input("Invalid choice. Please enter a valid number.", logger)
+
+
+# Gets the input for the download format
+def get_download_format(logger):
+    while True:
+        user_format = input("Choose the download format:\n1. AZW3\n2. EPUB\n3. MOBI\n4. PDF\n5. HTML\n")
+        formats = ['1', '2', '3', '4', '5']
+        if user_format in formats:
+            chosen_format = ["AZW3", "EPUB", "MOBI", "PDF", "HTML"][int(user_format) - 1]
+            logger.info(f"User chose to download in {chosen_format} format.")
+            return chosen_format
+        else:
+            error_handling.handle_invalid_input("Invalid choice. Please enter a valid number.", logger)
