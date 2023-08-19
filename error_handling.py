@@ -29,7 +29,7 @@ def handle_invalid_input(context, logger):
 # Handles token not found error
 def handle_token_not_found(logger):
     logger.error("Authenticity token not found. Cannot log in.")
-    print("\nAn error occurred while logging in. Please try again later.Check the logs for more details.")
+    print("\nAn error occurred while logging in. Skipping. Please try again later. Check the logs for more details.")
 
 
 # Handles parse errors

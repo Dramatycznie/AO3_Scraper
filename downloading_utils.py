@@ -4,6 +4,8 @@ import requests
 from bs4 import BeautifulSoup
 from tqdm import tqdm
 import error_handling
+
+
 # add error handling to functions
 
 
@@ -42,7 +44,6 @@ def extract_work_urls_from_page(url, session, logger):
 
     except requests.exceptions.RequestException as error:
         error_handling.handle_request_error(error, logger)
-        return
 
     return work_urls
 
@@ -66,7 +67,6 @@ def extract_work_urls_from_series(series_url, session, logger):
 
     except requests.exceptions.RequestException as error:
         error_handling.handle_request_error(error, logger)  # Handle request error
-        return
 
     return series_work_urls
 
@@ -132,6 +132,10 @@ def download_bookmarks(url, start_page, end_page, session, chosen_format, delay,
     for page in range(start_page, end_page + 1):
         bookmark_page_url = f"{url}?page={page}"
         work_urls = extract_work_urls_from_page(bookmark_page_url, session, logger)
+
+        # Check if there was an error during URL extraction, and if so, skip to the next page
+        if not work_urls:
+            break
 
         # Loop through extracted work URLs and download
         for work_url in tqdm(work_urls, desc=f"Downloading works from page {page}", leave=True):

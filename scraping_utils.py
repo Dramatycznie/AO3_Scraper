@@ -20,7 +20,6 @@ def get_element_text_list(elements):
 
 # Scrapes a single bookmark entry
 def scrape_single_bookmark(bookmark, csvwriter):
-
     # Get title from the bookmark
     title_element = bookmark.select_one("h4 a:nth-of-type(1)")
     if title_element:
@@ -82,6 +81,8 @@ def scrape_bookmarks(username, start_page, end_page, session, delay, logger):
 
             except (requests.exceptions.RequestException, socket.timeout) as error:
                 error_handling.handle_request_error(error, logger)
+                return
+            if error_handling.handle_retry_later(response, logger):
                 return
 
             # Loop through each bookmark on the page

@@ -30,7 +30,11 @@ def main():
 
             # Get the info needed to scrape the bookmarks
             username, url = user_input.get_username(logged_in, action, logger)
-            if user_input.get_available_pages(username, session, url, logger):
+
+            # Call get_available_pages and check the result
+            available_pages = user_input.get_available_pages(username, session, url, logger)
+
+            if available_pages is not None:
                 start_page, end_page = user_input.get_page_range(session, url, logger)
                 delay = user_input.get_delay(logger)
 
@@ -43,7 +47,7 @@ def main():
 
                 if not user_input.ask_again(logger):
                     user_interface.print_goodbye()
-                    break
+                    break  # Exit the loop if the user chooses not to try again
 
     except KeyboardInterrupt:
         error_handling.handle_keyboard_interrupt(logger)

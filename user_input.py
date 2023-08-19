@@ -41,8 +41,6 @@ def get_login_info(token, session, logger):
         error_handling.handle_token_not_found(logger)
         return False
 
-    response = None
-
     while True:
         # Prompt for user input
         username_or_email = input("\nEnter your username or email: ")
@@ -65,6 +63,7 @@ def get_login_info(token, session, logger):
 
         except requests.exceptions.RequestException as error:
             error_handling.handle_request_error(error, logger)
+            continue
 
         # Check if login was successful
         if "Successfully logged in" in response.text:
@@ -119,38 +118,38 @@ def get_username(logged_in, action, logger):
 
 # Gets the number of pages of bookmarks available (with error handling)
 def get_available_pages(username, session, url, logger):
-    while True:
-        try:
-            # Construct the URL based on the login status
-            response = session.get(url, timeout=60) if session else requests.get(url, timeout=60)
-            response.raise_for_status()
+    try:
+        # Construct the URL based on the login status
+        response = session.get(url, timeout=60) if session else requests.get(url, timeout=60)
+        response.raise_for_status()
 
-            soup = BeautifulSoup(response.text, 'html.parser')
-            bookmarks = soup.find_all("li", class_="bookmark")
+        soup = BeautifulSoup(response.text, 'html.parser')
+        bookmarks = soup.find_all("li", class_="bookmark")
 
-            if len(bookmarks) == 0:
-                error_handling.handle_invalid_input(f"{username} has no bookmarks.", logger)
-                return None
-
-            # Extract pagination information
-            pagination = soup.find("ol", class_="actions")
-            if pagination is not None:
-                pagination = pagination.find_all("li")
-                last_page = int(pagination[-2].text)
-            else:
-                error_handling.handle_parse_error(logger)
-                return None  # Return None in case of pagination parse error
-
-            print(f"\nThe user has {Fore.CYAN}{last_page}{Fore.RESET} pages of bookmarks available.")
-            logger.info(f"{username} has {last_page} pages of bookmarks available.")
-            return last_page
-
-        except requests.exceptions.RequestException as error:
-            error_handling.handle_request_error(error, logger)
-
-        except (AttributeError, ValueError):
-            error_handling.handle_parse_error(logger)
+        if len(bookmarks) == 0:
+            error_handling.handle_invalid_input(f"{username} has no bookmarks.", logger)
             return None
+
+        # Extract pagination information
+        pagination = soup.find("ol", class_="actions")
+        if pagination is not None:
+            pagination = pagination.find_all("li")
+            last_page = int(pagination[-2].text)
+        else:
+            error_handling.handle_parse_error(logger)
+            return None  # Return None in case of pagination parse error
+
+        print(f"\nThe user has {Fore.CYAN}{last_page}{Fore.RESET} pages of bookmarks available.")
+        logger.info(f"{username} has {last_page} pages of bookmarks available.")
+        return last_page
+
+    except requests.exceptions.RequestException as error:  # works ok if not logged in (check for logged in)
+        error_handling.handle_request_error(error, logger)
+        return None  # Return None to indicate an error
+
+    except (AttributeError, ValueError):
+        error_handling.handle_parse_error(logger)
+        return None
 
 
 # Gets the page range from the user
@@ -229,7 +228,7 @@ def get_delay(logger):
 # Gets the input for the download or scrape choice
 def download_or_scrape(logger):
     while True:
-        choice = input("Do you want to scrape the bookmarks or download them?\n1. Scrape\n2. Download\n")
+        choice = input("\nDo you want to scrape the bookmarks or download them?\n1. Scrape\n2. Download\n")
         choices = ['1', '2']
         if choice in choices:
             action = ["scrape", "download"][int(choice) - 1]
@@ -242,7 +241,7 @@ def download_or_scrape(logger):
 # Gets the input for the download format
 def get_download_format(logger):
     while True:
-        user_format = input("Choose the download format:\n1. AZW3\n2. EPUB\n3. MOBI\n4. PDF\n5. HTML\n")
+        user_format = input("\nChoose the download format:\n1. AZW3\n2. EPUB\n3. MOBI\n4. PDF\n5. HTML\n")
         formats = ['1', '2', '3', '4', '5']
         if user_format in formats:
             chosen_format = ["AZW3", "EPUB", "MOBI", "PDF", "HTML"][int(user_format) - 1]
