@@ -3,3 +3,7 @@
 
 # Ignore Python compiled bytecode files
 __pycache__/
+
+# Ignore app.log file
+app.log
+
