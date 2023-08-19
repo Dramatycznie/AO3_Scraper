@@ -70,7 +70,8 @@ def scrape_bookmarks(username, start_page, end_page, session, delay, logger):
         total_pages = end_page - start_page + 1
 
         # Loop through pages and scrape bookmarks
-        for page in tqdm(range(start_page, end_page + 1), total=total_pages, desc="Scraping"):
+        print()
+        for page in tqdm(range(start_page, end_page + 1), total=total_pages, desc="Scraping: "):
             try:
                 response = session.get(
                     f"https://archiveofourown.org/users/{username}/bookmarks?private=true&page={page}") if \
@@ -81,9 +82,6 @@ def scrape_bookmarks(username, start_page, end_page, session, delay, logger):
 
             except (requests.exceptions.RequestException, socket.timeout) as error:
                 error_handling.handle_request_error(error, logger)
-                return
-
-            if error_handling.handle_retry_later(response, logger):
                 return
 
             # Loop through each bookmark on the page

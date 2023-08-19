@@ -1,7 +1,7 @@
 import sys
 
 
-# Handles the "Retry later" message
+# Handles the "Retry later" message (unneeded?)
 def handle_retry_later(response, logger):
     if "Retry later" in response.text:
         logger.error("Received 'Retry later' message. Too many requests, stopping scraping.")
@@ -12,8 +12,12 @@ def handle_retry_later(response, logger):
 
 # Handles request errors
 def handle_request_error(error, logger):
-    logger.error(f"An error occurred while making the request: {error}")
-    print("\nAn error occurred while making the request. Please try again later. Check the logs for more details.")
+    if "429" in str(error):  # HTTP 429: Too Many Requests
+        logger.error("Too many requests, stopping scraping.")
+        print("\nToo many requests. Please try again later, consider increasing the delay.")
+    else:
+        logger.error(f"An error occurred while making the request: {error}")
+        print("\nAn error occurred while making the request. Please try again later. Check the logs for more details.")
 
 
 # Handles invalid input
