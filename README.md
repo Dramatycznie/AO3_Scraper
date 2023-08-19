@@ -1,5 +1,5 @@
 # AO3_Scraper
-This script is a web scraper that extracts bookmarks from the Archive of Our Own website (AO3) and saves the data to a CSV file. Now works on public and private bookmarks (if you log in).
+Web scraper that extracts bookmark metadata from Archive of Our Own and saves it to a CSV file. Works on public and private bookmarks if you log into your AO3 account. Now with an option to download the bookmarks and neatly organize them into folders based on fandoms.
 
 ## Table of Contents
 - [Features](#features)
@@ -10,13 +10,16 @@ This script is a web scraper that extracts bookmarks from the Archive of Our Own
 - [Bug Reports and Feature Requests](#bug-reports-and-feature-requests)
 
 # Features
-- Extracts bookmark data such as URL, title, authors, fandoms, warnings, ratings, categories, characters, relationships, tags, wordcounts, date bookmarked, date updated.
-- Allows user to log into their AO3 account to access private bookmarks.
+- Extracts bookmark metadata such as URL, title, authors, fandoms, warnings, ratings, categories, characters, relationships, tags, wordcounts, date bookmarked, date updated.
+- Downloads bookmarks to different folders based on fandoms, and names the files based on the title and authors.
+- Allows user to log into their AO3 account to access private bookmarks and works that are only available to registered users.
+- Allows user to choose scraping or downloading bookmarks.
 - Implements logging for better error tracking and troubleshooting.
-- Shows the number of pages available for scraping.
-- Allows user to specify a range of pages to scrape.
+- Shows the number of pages available.
+- Allows user to specify a range of pages.
 - Allows user to specify an interval delay between requests.
-- Displays a progress bar while scraping.
+- Displays a progress bar.
+- Allows user to choose format when downloading bookmarks (HTML, MOBI, EPUB, PDF, AZW3).
 - Writes extracted data to a CSV file.
 
 # Dependencies
@@ -30,25 +33,18 @@ This script is a web scraper that extracts bookmarks from the Archive of Our Own
 Run the script yourself or use the release.
 
 ### Running the script
-- Install `Python 3`
-- Install `PIP`
-- Install the required dependencies by running `pip install -r requirements.txt` or install them individually by running `pip install requests`, `pip install beautifulsoup4`, `pip install tqdm` in command prompt or terminal. Before running the command, make sure that you are in the correct directory where the `requirements.txt` file is located. You can navigate to the correct directory in the command prompt or terminal by using the `cd` command.
+- Install `Python 3` and `PIP`
+- Install the required dependencies by running `pip install -r requirements.txt` in the correct directory where the `requirements.txt` file is located.
 - Run the script by running `python main.py` in command prompt or terminal. Make sure you're in the correct directory.
-- When prompted, enter the username of a user whose bookmarks you want to scrape or log into your AO3 account.
-- When prompted, enter the starting and ending page of bookmarks to scrape, and an interval delay between requests. Suggested delay time is 5 seconds or more.
-- The script will begin scraping the bookmarks and will save the extracted data to a CSV file with the format of `username_bookmarks.csv`.
-
-Note: Be mindful of the delay time and the number of pages to scrape, as it may take a long time to execute, and also it may put a lot of burden on AO3's servers. A suggested delay time of 5 seconds or more is recommended. Consider longer delays if you're scraping a lot of data.
+- Scrape or download the bookmarks.
 
 ### Use the release
-Instead of downloading the script, you can download the release AO3_Scraper.exe which is the compiled version of the script. This allows you to run the script without having to install Python, PIP or any other dependencies.
+Instead of downloading the script, you can download the [latest release](https://github.com/Dramatycznie/AO3_Scraper/releases) and run it directly.
 
 - Download the release.
 - Unpack it.
 - Run `AO3_Scraper.exe`.
-- When prompted, enter the username of a user whose bookmarks you want to scrape or log into your AO3 account.
-- When prompted, enter the starting and ending page of bookmarks to scrape, and an interval delay between requests. Suggested delay time is 5 seconds or more.
-- The script will begin scraping the bookmarks and will save the extracted data to a CSV file with the format of `username_bookmarks.csv`.
+- Scrape or download the bookmarks.
 
 # What can be done with the data?
 The script saves the extracted data in a CSV file with the format of `username_bookmarks.csv.` This file can be easily imported into a spreadsheet program such as Microsoft Excel, Google Sheets, or LibreOffice Calc. Once imported, you can then manipulate the data as you like. For example, you can use Excel's Power Query to split the delimited data from one column into new rows.
@@ -60,8 +56,8 @@ Here are the steps to split the delimited data you're interested in from one col
 - Go to the "Data" tab and click on "From Table/Range to open Power Query.
 - Select the column that contains the delimited data.
 - Click on "Split Column" and then "By Delimiter".
-- Select the delimiter (e.g. comma, semicolon, etc.) that separates the values in the selected column.
-- Click "Advanced Options" and pick "Split by Rows"
+- Select the delimiter (semicolon and a space after it).
+- Click "Advanced Options" and pick "Split by Rows".
 
 You can now manipulate the data further as needed. Data visualization, statistical analysis, or even machine learning? The possibilities are endless!
 
