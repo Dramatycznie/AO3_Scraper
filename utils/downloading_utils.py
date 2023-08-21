@@ -69,7 +69,7 @@ def extract_work_urls_from_series(series_url, session, logger):
 
 
 # Downloads the works from the given work URLs
-def download_works_from_urls(work_url, session, chosen_format, delay, logger):
+def download_works_from_urls(work_url, session, chosen_format, logger):
     try:
         response = session.get(work_url) if session else requests.get(work_url)
         if response.status_code == 200:
@@ -118,22 +118,29 @@ def download_works_from_urls(work_url, session, chosen_format, delay, logger):
                                     logger.info(
                                         f"'{file_name}' downloaded successfully to '{cleaned_fandom}' "
                                         f"folder.")
-                                    time.sleep(delay)
 
     except requests.RequestException as error:
         error_handling.handle_request_error(error, logger)
         return
 
 
-def download_bookmarks(url, start_page, end_page, session, chosen_format, delay, logger):
-    for page in range(start_page, end_page + 1):
-        bookmark_page_url = f"{url}?page={page}"
+def download_bookmarks(username, logged_in, start_page, end_page, session, chosen_format, delay, logger):
+
+    base_url = f"https://archiveofourown.org/users/{username}/bookmarks"
+    logged_in_base_url = base_url + "?private=true" if logged_in else base_url
+    page_number = start_page
+
+    while page_number <= end_page:
+        bookmark_page_url = f"{logged_in_base_url}&page={page_number}" if logged_in else f"{logged_in_base_url}?page=" \
+                                                                                         f"{page_number}"
         work_urls = extract_work_urls_from_page(bookmark_page_url, session, logger)
 
-        # Check if there was an error during URL extraction, and if so, skip to the next page
         if not work_urls:
             break
 
         # Loop through extracted work URLs and download
-        for work_url in tqdm(work_urls, desc=f"Downloading works from page {page}", leave=True):
-            download_works_from_urls(work_url, session, chosen_format, delay, logger)
+        for work_url in tqdm(work_urls, desc=f"Downloading works from page {page_number}", leave=True):
+            download_works_from_urls(work_url, session, chosen_format, logger)
+            time.sleep(delay)
+
+        page_number += 1

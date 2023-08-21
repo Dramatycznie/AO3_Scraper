@@ -212,9 +212,10 @@ def get_page_range(session, url, logger):
 def get_delay(logger):
     while True:
         try:
-            delay = int(input("\nEnter an interval delay between requests. Should be at least 5 seconds: "))
-            if delay < 5:
-                error_handling.handle_invalid_input("Please enter a delay of at least 5 seconds.", logger)
+            delay = int(input("\nEnter the interval delay between requests (at least 1 second, suggested value "
+                              "is 5 seconds): "))
+            if delay < 1:
+                error_handling.handle_invalid_input("Please enter a delay of at least 1 second.", logger)
                 continue
             break
 
