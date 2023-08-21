@@ -10,17 +10,13 @@ Web scraper that extracts bookmark metadata from Archive of Our Own and saves it
 - [Bug Reports and Feature Requests](#bug-reports-and-feature-requests)
 
 # Features
-- Extracts bookmark metadata such as URL, title, authors, fandoms, warnings, ratings, categories, characters, relationships, tags, wordcounts, date bookmarked, date updated.
-- Downloads bookmarks to different folders based on fandoms, and names the files based on the title and authors.
 - Allows user to log into their AO3 account to access private bookmarks and works that are only available to registered users.
-- Allows user to choose scraping or downloading bookmarks.
-- Implements logging for better error tracking and troubleshooting.
-- Shows the number of pages available.
-- Allows user to specify a range of pages.
-- Allows user to specify an interval delay between requests.
-- Displays a progress bar.
-- Allows user to choose format when downloading bookmarks (HTML, MOBI, EPUB, PDF, AZW3).
+- Extracts bookmark metadata such as URL, title, authors, fandoms, warnings, ratings, categories, characters, relationships, tags, wordcounts, date bookmarked, date updated.
 - Writes extracted data to a CSV file.
+- Downloads bookmarks to different folders based on fandoms, and names the files based on the title and authors.
+- Supports downloading bookmarked series.
+- Allows user to choose format when downloading bookmarks (HTML, MOBI, EPUB, PDF, AZW3).
+
 
 # Dependencies
 - Python 3
