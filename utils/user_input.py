@@ -2,7 +2,7 @@ import re
 import requests
 from bs4 import BeautifulSoup
 from colorama import Fore
-import error_handling
+from . import error_handling
 
 
 # Asks the user if they want to log in

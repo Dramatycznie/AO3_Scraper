@@ -3,10 +3,7 @@ import time
 import requests
 from bs4 import BeautifulSoup
 from tqdm import tqdm
-import error_handling
-
-
-# add error handling to functions
+from . import error_handling
 
 
 # Cleans the folder name to be used as a folder name

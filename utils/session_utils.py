@@ -1,6 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-import error_handling
+from . import error_handling
 
 
 # Creates a session and returns the authenticity token

@@ -1,12 +1,12 @@
 import atexit
 
-import error_handling
-import logging_utils
-import user_input
-import user_interface
-import scraping_utils
-import session_utils
-import downloading_utils
+from utils import error_handling
+from utils import logging_utils
+from utils import user_input
+from utils import user_interface
+from utils import scraping_utils
+from utils import session_utils
+from utils import downloading_utils
 
 
 # Main function
