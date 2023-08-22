@@ -40,8 +40,8 @@ def main():
 
                 if action == "download":
                     chosen_format = user_input.get_download_format(logger)
-                    downloading_utils.download_bookmarks(url, start_page, end_page, session, chosen_format, delay,
-                                                         logger)
+                    downloading_utils.download_bookmarks(username, logged_in, start_page, end_page, session,
+                                                         chosen_format, delay, logger)
                 elif action == "scrape":
                     scraping_utils.scrape_bookmarks(username, start_page, end_page, session, delay, logger)
 
