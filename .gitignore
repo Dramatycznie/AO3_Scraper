@@ -1,15 +1,11 @@
-# Ignore the .idea/ directory
 .idea/
 
-# Ignore Python compiled bytecode files
 __pycache__/
 
-# Ignore virtual environment
 venv/
 
-# Ignore app.log file
 app.log
 
-# Ignore the Downloaded Works folder
-Downloaded Works/
+main.spec
 
+Downloaded Works/
