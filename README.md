@@ -1,5 +1,7 @@
 # AO3_Scraper
-Web scraper that extracts bookmark metadata from Archive of Our Own and saves it to a CSV file. Works on public and private bookmarks if you log into your AO3 account. Now with an option to download the bookmarks and neatly organize them into folders based on fandoms.
+A web scraper that extracts bookmark metadata from Archive of Our Own and saves it to a CSV file. Has an option to download the bookmarks and neatly organize them into folders based on fandoms.
+
+**Works on public and private bookmarks if you log into your AO3 account.**
 
 ## Table of Contents
 - [Features](#features)
@@ -16,6 +18,7 @@ Web scraper that extracts bookmark metadata from Archive of Our Own and saves it
 - Downloads bookmarks to different folders based on fandoms, and names the files based on the title and authors.
 - Supports downloading bookmarked series.
 - Allows user to choose format when downloading bookmarks (HTML, MOBI, EPUB, PDF, AZW3).
+- **New:** Checks bookmarks for updates and downloads them accordingly (EPUB only).
 
 
 # Dependencies
