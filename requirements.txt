@@ -2,3 +2,4 @@ requests~=2.31.0
 beautifulsoup4~=4.12.2
 colorama~=0.4.6
 tqdm~=4.66.1
+EbookLib~=0.18
