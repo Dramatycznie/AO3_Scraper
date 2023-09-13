@@ -1,16 +1,14 @@
 import os
-import re
 import time
 from datetime import datetime
 import warnings
 
-import ebooklib
 import requests
 from bs4 import BeautifulSoup
-from ebooklib import epub
 from tqdm import tqdm
 
 from . import error_handling
+from . import updating_utils
 
 # Before importing ebooklib, filter out the specific warning
 warnings.filterwarnings("ignore", category=UserWarning,
@@ -28,43 +26,6 @@ def clean_work_title(title):
     forbidden_characters = r'<>:"/\|?*'
     cleaned_title = ''.join(char for char in title if char not in forbidden_characters)
     return cleaned_title[:50]
-
-
-# Date patterns to get the last date in the file (either Completed, Updated, or Published)
-date_patterns = [
-    (r'Completed: (\d{4}-\d{2}-\d{2})', 'Completed'),
-    (r'Updated: (\d{4}-\d{2}-\d{2})', 'Updated'),
-    (r'Published: (\d{4}-\d{2}-\d{2})', 'Published')
-]
-
-
-# Extracts the date from an EPUB file
-def extract_epub_date(file_path):
-    if not file_path.endswith('.epub'):
-        # This file is not an EPUB file, so return None or handle it accordingly.
-        return None
-
-    # Open the EPUB file
-    book = ebooklib.epub.read_epub(file_path)  # You need to open the EPUB file using ebooklib
-
-    # Initialize an empty string to store the text content
-    text_content = ""
-
-    # Extract the text content from the EPUB
-    for item in book.get_items():
-        if isinstance(item, ebooklib.epub.EpubHtml):  # Use ebooklib.epub.EpubHtml for HTML content
-            text_content += item.get_body_content().decode('utf-8')
-
-    # Search for date patterns in the text content
-    for pattern, label in date_patterns:
-        match = re.search(pattern, text_content)
-        if match:
-            epub_date = match.group(1)
-            epub_date = datetime.strptime(epub_date, "%Y-%m-%d")
-            return epub_date
-
-    # Return a default message if no date is found
-    return None
 
 
 # Extracts the work URLs from a page of bookmarks
@@ -161,7 +122,7 @@ def download_works_from_urls(work_url, session, chosen_format, action, logger):
 
                             if os.path.exists(file_path):
                                 if action == "download updates":
-                                    epub_date = extract_epub_date(file_path)
+                                    epub_date = updating_utils.extract_epub_date(file_path)
                                     if update_date_element > epub_date or epub_date is None or update_date_element \
                                             is None:
                                         download_file(file_path, format_url, file_name, cleaned_fandom, logger)
