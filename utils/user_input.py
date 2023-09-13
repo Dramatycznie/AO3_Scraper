@@ -229,10 +229,11 @@ def get_delay(logger):
 # Gets the input for the download or scrape choice
 def download_or_scrape(logger):
     while True:
-        choice = input("\nDo you want to scrape the bookmarks or download them?\n1. Scrape\n2. Download\n")
-        choices = ['1', '2']
+        choice = input("\nDo you want to scrape the bookmarks or download them?\n1. Scrape\n2. Download\n"
+                       "3. Download updates (for now EPUB only)\n")
+        choices = ['1', '2', '3']
         if choice in choices:
-            action = ["scrape", "download"][int(choice) - 1]
+            action = ["scrape", "download", "download updates"][int(choice) - 1]
             logger.info(f"User chose to {action} bookmarks.")
             return action
         else:

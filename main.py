@@ -35,13 +35,23 @@ def main():
             available_pages = user_input.get_available_pages(username, session, url, logger)
 
             if available_pages is not None:
-                start_page, end_page = user_input.get_page_range(session, url, logger)
+                # if user chooses to download updates, start from page 1 and end at the last page, no asking
+                if action != "download updates":
+                    start_page, end_page = user_input.get_page_range(session, url, logger)
+                else:
+                    start_page = 1
+                    end_page = available_pages
+
                 delay = user_input.get_delay(logger)
 
-                if action == "download":
-                    chosen_format = user_input.get_download_format(logger)
+                if action in ["download", "download updates"]:
+                    if action == "download":
+                        chosen_format = user_input.get_download_format(logger)
+                    else:
+                        chosen_format = "EPUB"  # for now just EPUB files are supported
+
                     downloading_utils.download_bookmarks(username, logged_in, start_page, end_page, session,
-                                                         chosen_format, delay, logger)
+                                                         chosen_format, delay, action, logger)
                 elif action == "scrape":
                     scraping_utils.scrape_bookmarks(username, start_page, end_page, session, delay, logger)
 
