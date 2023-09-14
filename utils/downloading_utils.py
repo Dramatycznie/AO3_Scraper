@@ -122,9 +122,17 @@ def download_works_from_urls(work_url, session, chosen_format, action, logger):
 
                             if os.path.exists(file_path):
                                 if action == "download updates":
-                                    epub_date = updating_utils.extract_epub_date(file_path)
-                                    if update_date_element > epub_date or epub_date is None or update_date_element \
-                                            is None:
+                                    if chosen_format == "EPUB":
+                                        file_date = updating_utils.extract_epub_date(file_path)
+                                    elif chosen_format == "PDF":
+                                        file_date = updating_utils.extract_pdf_date(file_path)
+                                    elif chosen_format == "HTML":
+                                        file_date = updating_utils.extract_html_date(file_path)
+                                    else:
+                                        file_date = None
+
+                                    if file_date is None or (update_date_element is not None and
+                                                             update_date_element > file_date):
                                         download_file(file_path, format_url, file_name, cleaned_fandom, logger)
                                     else:
                                         logger.info(f"'{file_name}' in '{cleaned_fandom}' does not need to be updated.")

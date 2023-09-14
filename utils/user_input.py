@@ -241,12 +241,21 @@ def download_or_scrape(logger):
 
 
 # Gets the input for the download format
-def get_download_format(logger):
+def get_download_format(logger, action):
     while True:
-        user_format = input("\nChoose the download format:\n1. AZW3\n2. EPUB\n3. MOBI\n4. PDF\n5. HTML\n")
-        formats = ['1', '2', '3', '4', '5']
+        if action == "download updates":
+            user_format = input("\nChoose the download format:\n1. EPUB\n2. PDF\n3. HTML\n")
+            formats = ['1', '2', '3']
+        else:
+            user_format = input("\nChoose the download format:\n1. AZW3\n2. EPUB\n3. MOBI\n4. PDF\n5. HTML\n")
+            formats = ['1', '2', '3', '4', '5']
+
         if user_format in formats:
-            chosen_format = ["AZW3", "EPUB", "MOBI", "PDF", "HTML"][int(user_format) - 1]
+            if action == "download updates":
+                chosen_format = ["EPUB", "PDF", "HTML"][int(user_format) - 1]
+            else:
+                chosen_format = ["AZW3", "EPUB", "MOBI", "PDF", "HTML"][int(user_format) - 1]
+
             logger.info(f"User chose to download in {chosen_format} format.")
             return chosen_format
         else:

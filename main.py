@@ -45,11 +45,7 @@ def main():
                 delay = user_input.get_delay(logger)
 
                 if action in ["download", "download updates"]:
-                    if action == "download":
-                        chosen_format = user_input.get_download_format(logger)
-                    else:
-                        chosen_format = "EPUB"  # for now just EPUB files are supported
-
+                    chosen_format = user_input.get_download_format(logger, action)
                     downloading_utils.download_bookmarks(username, logged_in, start_page, end_page, session,
                                                          chosen_format, delay, action, logger)
                 elif action == "scrape":
