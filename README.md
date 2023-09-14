@@ -18,15 +18,18 @@ A web scraper that extracts bookmark metadata from Archive of Our Own and saves 
 - Downloads bookmarks to different folders based on fandoms, and names the files based on the title and authors.
 - Supports downloading bookmarked series.
 - Allows user to choose format when downloading bookmarks (HTML, MOBI, EPUB, PDF, AZW3).
-- **New:** Checks bookmarks for updates and downloads them accordingly (EPUB only).
+- **New:** Checks bookmarks for updates and downloads them accordingly (HTML, EPUB, PDF).
 
 
 # Dependencies
 - Python 3
 - PIP
-- requests library
-- BeautifulSoup library
-- tqdm library
+- requests
+- BeautifulSoup 
+- tqdm
+- colorama
+- ebooklib
+- pypdf2
 
 # How to use
 Run the script yourself or use the release.
