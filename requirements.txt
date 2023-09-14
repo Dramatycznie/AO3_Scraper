@@ -3,3 +3,4 @@ beautifulsoup4~=4.12.2
 colorama~=0.4.6
 tqdm~=4.66.1
 EbookLib~=0.18
+pypdf2~=3.0.1
