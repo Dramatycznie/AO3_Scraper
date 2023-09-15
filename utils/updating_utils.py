@@ -14,42 +14,41 @@ date_patterns = [
 ]
 
 
-# Extracts the date from an EPUB file
 def extract_epub_date(file_path):
-    epub_file = ebooklib.epub.read_epub(file_path)
+    with open(file_path, 'rb') as epub_file:
+        epub_book = ebooklib.epub.read_epub(epub_file)
 
-    text_content = ""
+        text_content = ""
 
-    for item in epub_file.get_items():
-        if isinstance(item, ebooklib.epub.EpubHtml):
-            text_content += item.get_body_content().decode('utf-8')
+        for item in epub_book.get_items():
+            if isinstance(item, ebooklib.epub.EpubHtml):
+                text_content += item.get_body_content().decode('utf-8')
 
-    for pattern, label in date_patterns:
-        match = re.search(pattern, text_content)
-        if match:
-            file_date = match.group(1)
-            file_date = datetime.strptime(file_date, "%Y-%m-%d")
-            return file_date
+        for pattern, label in date_patterns:
+            match = re.search(pattern, text_content)
+            if match:
+                file_date = match.group(1)
+                file_date = datetime.strptime(file_date, "%Y-%m-%d")
+                return file_date
 
     return None
 
 
-# Extracts the date from a PDF file
 def extract_pdf_date(file_path):
-    pdf_file = open(file_path, 'rb')
-    pdf_reader = PdfReader(pdf_file)
+    with open(file_path, 'rb') as pdf_file:
+        pdf_reader = PdfReader(pdf_file)
 
-    text_content = ""
+        text_content = ""
 
-    page = pdf_reader.pages[0]
-    text_content += page.extract_text()
+        page = pdf_reader.pages[0]
+        text_content += page.extract_text()
 
-    for pattern, label in date_patterns:
-        match = re.search(pattern, text_content)
-        if match:
-            file_date = match.group(1)
-            file_date = datetime.strptime(file_date, "%Y-%m-%d")
-            return file_date
+        for pattern, label in date_patterns:
+            match = re.search(pattern, text_content)
+            if match:
+                file_date = match.group(1)
+                file_date = datetime.strptime(file_date, "%Y-%m-%d")
+                return file_date
 
     return None
 
@@ -67,7 +66,7 @@ def extract_html_date(file_path):
         if match:
             file_date = match.group(1)
             file_date = datetime.strptime(file_date, "%Y-%m-%d")
+
             return file_date
 
     return None
-
