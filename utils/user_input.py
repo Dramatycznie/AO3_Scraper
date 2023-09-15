@@ -77,7 +77,7 @@ def get_login_info(token, session, logger):
 # Gets the username of the user whose bookmarks are to be scraped
 def get_username(logged_in, action, logger):
     while True:
-        username = input(f"\nEnter the username of the user whose bookmarks you want to {action}: ")
+        username = input(f"\nEnter the username of the user whose bookmarks you want to download or scrape: ")
         if not username:
             error_handling.handle_invalid_input("Please enter a username.", logger)
             continue
@@ -230,7 +230,7 @@ def get_delay(logger):
 def download_or_scrape(logger):
     while True:
         choice = input("\nDo you want to scrape the bookmarks or download them?\n1. Scrape\n2. Download\n"
-                       "3. Download updates (for now EPUB only)\n")
+                       "3. Download updates\n")
         choices = ['1', '2', '3']
         if choice in choices:
             action = ["scrape", "download", "download updates"][int(choice) - 1]
@@ -255,6 +255,8 @@ def get_download_format(logger, action):
                 chosen_format = ["EPUB", "PDF", "HTML"][int(user_format) - 1]
             else:
                 chosen_format = ["AZW3", "EPUB", "MOBI", "PDF", "HTML"][int(user_format) - 1]
+
+            print()
 
             logger.info(f"User chose to download in {chosen_format} format.")
             return chosen_format
