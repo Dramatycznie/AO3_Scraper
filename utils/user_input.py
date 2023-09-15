@@ -77,7 +77,7 @@ def get_login_info(token, session, logger):
 # Gets the username of the user whose bookmarks are to be scraped
 def get_username(logged_in, action, logger):
     while True:
-        username = input(f"\nEnter the username of the user whose bookmarks you want to {action}: ")
+        username = input(f"\nEnter the username of the user whose bookmarks you want to download or scrape: ")
         if not username:
             error_handling.handle_invalid_input("Please enter a username.", logger)
             continue
@@ -230,7 +230,7 @@ def get_delay(logger):
 def download_or_scrape(logger):
     while True:
         choice = input("\nDo you want to scrape the bookmarks or download them?\n1. Scrape\n2. Download\n"
-                       "3. Download updates (for now EPUB only)\n")
+                       "3. Download updates\n")
         choices = ['1', '2', '3']
         if choice in choices:
             action = ["scrape", "download", "download updates"][int(choice) - 1]
@@ -241,12 +241,23 @@ def download_or_scrape(logger):
 
 
 # Gets the input for the download format
-def get_download_format(logger):
+def get_download_format(logger, action):
     while True:
-        user_format = input("\nChoose the download format:\n1. AZW3\n2. EPUB\n3. MOBI\n4. PDF\n5. HTML\n")
-        formats = ['1', '2', '3', '4', '5']
+        if action == "download updates":
+            user_format = input("\nChoose the download format:\n1. EPUB\n2. PDF\n3. HTML\n")
+            formats = ['1', '2', '3']
+        else:
+            user_format = input("\nChoose the download format:\n1. AZW3\n2. EPUB\n3. MOBI\n4. PDF\n5. HTML\n")
+            formats = ['1', '2', '3', '4', '5']
+
         if user_format in formats:
-            chosen_format = ["AZW3", "EPUB", "MOBI", "PDF", "HTML"][int(user_format) - 1]
+            if action == "download updates":
+                chosen_format = ["EPUB", "PDF", "HTML"][int(user_format) - 1]
+            else:
+                chosen_format = ["AZW3", "EPUB", "MOBI", "PDF", "HTML"][int(user_format) - 1]
+
+            print()
+
             logger.info(f"User chose to download in {chosen_format} format.")
             return chosen_format
         else:
