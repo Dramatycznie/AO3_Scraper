@@ -14,6 +14,7 @@ date_patterns = [
 ]
 
 
+# Extracts the date from an EPUB file
 def extract_epub_date(file_path):
     with open(file_path, 'rb') as epub_file:
         epub_book = ebooklib.epub.read_epub(epub_file)
@@ -34,6 +35,7 @@ def extract_epub_date(file_path):
     return None
 
 
+# Extracts the date from a PDF file
 def extract_pdf_date(file_path):
     with open(file_path, 'rb') as pdf_file:
         pdf_reader = PdfReader(pdf_file)
