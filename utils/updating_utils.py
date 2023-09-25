@@ -16,21 +16,20 @@ date_patterns = [
 
 # Extracts the date from an EPUB file
 def extract_epub_date(file_path):
-    with open(file_path, 'rb') as epub_file:
-        epub_book = ebooklib.epub.read_epub(epub_file)
+    epub_book = ebooklib.epub.read_epub(file_path)
 
-        text_content = ""
+    text_content = ""
 
-        for item in epub_book.get_items():
-            if isinstance(item, ebooklib.epub.EpubHtml):
-                text_content += item.get_body_content().decode('utf-8')
+    for item in epub_book.get_items():
+        if isinstance(item, ebooklib.epub.EpubHtml):
+            text_content += item.get_body_content().decode('utf-8')
 
-        for pattern, label in date_patterns:
-            match = re.search(pattern, text_content)
-            if match:
-                file_date = match.group(1)
-                file_date = datetime.strptime(file_date, "%Y-%m-%d")
-                return file_date
+    for pattern, label in date_patterns:
+        match = re.search(pattern, text_content)
+        if match:
+            file_date = match.group(1)
+            file_date = datetime.strptime(file_date, "%Y-%m-%d")
+            return file_date
 
     return None
 
