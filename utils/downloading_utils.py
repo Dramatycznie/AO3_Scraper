@@ -2,6 +2,7 @@ import os
 import time
 from datetime import datetime
 import warnings
+from colorama import Fore
 
 import requests
 from bs4 import BeautifulSoup
@@ -137,7 +138,7 @@ def download_works_from_urls(work_url, session, chosen_format, action, logger):
                                     else:
                                         logger.info(f"'{file_name}' in '{cleaned_fandom}' does not need to be updated.")
                                         no_update_needed = True  # (assumes all works are up-to-date)
-                                        print("All works are up-to-date.")
+                                        tqdm.write(f"{Fore.CYAN}All works are up-to-date.{Fore.RESET}\n")
                                 else:
                                     logger.info(f"'{file_name}' in '{cleaned_fandom}' already exists. Skipping.")
                             else:
