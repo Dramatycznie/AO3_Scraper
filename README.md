@@ -7,18 +7,25 @@ A web scraper that extracts bookmark metadata from Archive of Our Own and saves 
 - [Features](#features)
 - [Dependencies](#dependencies)
 - [How to Use](#how-to-use)
-- [What Can Be Done with the Data?](#what-can-be-done-with-the-data)
 - [Contact](#contact)
 - [Bug Reports and Feature Requests](#bug-reports-and-feature-requests)
 
 # Features
-- Allows user to log into their AO3 account to access private bookmarks and works that are only available to registered users.
+
+Scrapes or downloads bookmarks from Archive of Our Own. Allows user to log into their account to access private bookmarks and works that are only available to registered users.
+
+### Scraping
 - Extracts bookmark metadata such as URL, title, authors, fandoms, warnings, ratings, categories, characters, relationships, tags, wordcounts, date bookmarked, date updated.
 - Writes extracted data to a CSV file.
+
+### Downloading
 - Downloads bookmarks to different folders based on fandoms, and names the files based on the title and authors.
 - Supports downloading bookmarked series.
 - Allows user to choose format when downloading bookmarks (HTML, MOBI, EPUB, PDF, AZW3).
-- **New:** Checks bookmarks for updates and downloads them accordingly (HTML, EPUB, PDF).
+
+### Updating
+- Checks bookmarks for updates and downloads them accordingly (HTML, EPUB, PDF). 
+- Works only if bookmarks are in the correct folder and named correctly.
 
 
 # Dependencies
@@ -35,7 +42,7 @@ A web scraper that extracts bookmark metadata from Archive of Our Own and saves 
 Run the script yourself or use the release.
 
 ### Running the script
-- Install `Python 3` and `PIP`
+- Download or clone the repository.
 - Install the required dependencies by running `pip install -r requirements.txt` in the correct directory where the `requirements.txt` file is located.
 - Run the script by running `python main.py` in command prompt or terminal. Make sure you're in the correct directory.
 - Scrape or download the bookmarks.
@@ -47,21 +54,6 @@ Instead of downloading the script, you can download the [latest release](https:/
 - Unpack it.
 - Run `AO3_Scraper.exe`.
 - Scrape or download the bookmarks.
-
-# What can be done with the data?
-The script saves the extracted data in a CSV file with the format of `username_bookmarks.csv.` This file can be easily imported into a spreadsheet program such as Microsoft Excel, Google Sheets, or LibreOffice Calc. Once imported, you can then manipulate the data as you like. For example, you can use Excel's Power Query to split the delimited data from one column into new rows.
-
-Here are the steps to split the delimited data you're interested in from one column into new rows using Power Query in Excel:
-
-- Open the CSV file in Excel.
-- Go to the "Data" tab and click on "From Text/CSV" to import the CSV file.
-- Go to the "Data" tab and click on "From Table/Range to open Power Query.
-- Select the column that contains the delimited data.
-- Click on "Split Column" and then "By Delimiter".
-- Select the delimiter (semicolon and a space after it).
-- Click "Advanced Options" and pick "Split by Rows".
-
-You can now manipulate the data further as needed. Data visualization, statistical analysis, or even machine learning? The possibilities are endless!
 
 # Contact
 If you have any questions or feedback about this project, please feel free to reach out to me.
