@@ -75,6 +75,9 @@ def scrape_bookmarks(username, start_page, end_page, session, delay, logger):
                 response = session.get(
                     f"https://archiveofourown.org/users/{username}/bookmarks?private=true&page={page}") if \
                     session else requests.get(f"https://archiveofourown.org/users/{username}/bookmarks?page={page}")
+
+                response.raise_for_status()
+
                 time.sleep(delay)
                 soup = BeautifulSoup(response.text, 'html.parser')
                 logger.info(f"Scraping page {page}")

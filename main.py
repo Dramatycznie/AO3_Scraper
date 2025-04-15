@@ -35,10 +35,14 @@ def main():
             available_pages = user_input.get_available_pages(username, session, url, logger)
 
             if available_pages is not None:
-                # if user chooses to download updates, start from page 1 and end at the last page, no asking
                 if action != "download updates":
-                    start_page, end_page = user_input.get_page_range(session, url, logger)
+                    # Get the range of the pages
+                    page_range = user_input.get_page_range(session, url, logger)
+                    if page_range is None:
+                        continue
+                    start_page, end_page = page_range
                 else:
+                    # ...Unless user chooses to download updates, start from page 1 and end at the last page, no asking
                     start_page = 1
                     end_page = available_pages
 

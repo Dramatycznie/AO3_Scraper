@@ -163,43 +163,42 @@ def get_page_range(session, url, logger):
 
             end_page = int(input("\nEnter the ending page number: "))
             if end_page < 1 or end_page < start_page:
-                error_handling.handle_invalid_input("The ending page number must be positive and greater than the "
-                                                    "starting page number.", logger)
+                error_handling.handle_invalid_input("The ending page number must be positive and greater than the starting page number.", logger)
                 continue
 
-            # Check if the starting page exists
-            response = session.get(url, timeout=60) if session else requests.get(url, timeout=60)
-            response.raise_for_status()
+            # Try to fetch the URL and extract pagination info
+            try:
+                # Request the bookmark page and raise HTTPError for bad responses
+                response = session.get(url, timeout=60) if session else requests.get(url, timeout=60)
+                response.raise_for_status()
 
-            if response.status_code != 200:
-                error_handling.handle_invalid_input(f"Starting page {start_page} does not exist.", logger)
-                continue
+                # Parse the HTML and extract the last page number from pagination
+                soup = BeautifulSoup(response.text, 'html.parser')
+                pagination = soup.find("ol", class_="actions")
 
-            # Extract pagination information
-            pagination = BeautifulSoup(response.text, 'html.parser').find("ol", class_="actions")
-            if pagination is not None:
-                pagination = pagination.find_all("li")
-                last_page = int(pagination[-2].text)
-                if start_page > last_page:
-                    error_handling.handle_invalid_input(f"Starting page {start_page} is out of range. Available "
-                                                        f"starting pages are those between 1 - {last_page}.", logger)
+                if pagination:
+                    pagination = pagination.find_all("li")
+                    last_page = int(pagination[-2].text)  # Second-to-last is usually the last page number
+                else:
+                    error_handling.handle_parse_error(logger)
                     continue
-            else:
+
+                # Validate the user-entered page numbers against available pages
+                if start_page > last_page:
+                    error_handling.handle_invalid_input(f"Starting page {start_page} is out of range. Available starting pages are between 1 - {last_page}.", logger)
+                    continue
+                if end_page > last_page:
+                    error_handling.handle_invalid_input(f"Ending page {end_page} is out of range. The last available page is {last_page}.", logger)
+                    continue
+
+            except requests.exceptions.RequestException as error:
+                # Handles errors and logs cleanly
+                error_handling.handle_request_error(error, logger)
+                return None
+            except (AttributeError, ValueError):
+                # Handles broken HTML or unexpected formats
                 error_handling.handle_parse_error(logger)
-                continue
-
-            # Check if the ending page exists
-            response = session.get(url, timeout=60) if session else requests.get(url, timeout=60)
-            response.raise_for_status()
-
-            if response.status_code != 200:
-                error_handling.handle_invalid_input(f"Ending page {end_page} does not exist.", logger)
-                continue
-
-            if end_page > last_page:
-                error_handling.handle_invalid_input(f"Ending page {end_page} is out of range. The last available "
-                                                    f"page is {last_page}.", logger)
-                continue
+                return None
 
             logger.info(f"Page range: {start_page} - {end_page}")
             return start_page, end_page
