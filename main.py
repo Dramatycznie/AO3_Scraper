@@ -11,12 +11,12 @@ from utils import downloading_utils
 
 # Main function
 def main():
+    session = None
     logger = logging_utils.setup_logging()
     atexit.register(logging_utils.log_program_closure, logger)
     try:
         user_interface.print_welcome()
         log_in = user_input.ask_if_log_in(logger)
-        token, session = None, None  # Initialize variables for the session
 
         while True:
             if log_in and session is None:  # Create a session if logging in
@@ -62,6 +62,12 @@ def main():
     except KeyboardInterrupt:
         error_handling.handle_keyboard_interrupt(logger)
 
+    finally:
+        if session:
+            session.close()
+            print("\nSession closed.")
+            logger.info("Session closed.")
 
 if __name__ == "__main__":
     main()
+

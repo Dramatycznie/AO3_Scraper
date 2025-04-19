@@ -15,10 +15,10 @@ def create_session(logger):
 
     try:
         # Create a session and make a GET request
-        with requests.Session() as session:
-            session.headers.update(headers)
-            response = session.get("https://archiveofourown.org/users/login")
-            response.raise_for_status()
+        session = requests.Session()
+        session.headers.update(headers)
+        response = session.get("https://archiveofourown.org/users/login")
+        response.raise_for_status()
 
         soup = BeautifulSoup(response.content, 'html.parser')
         token = soup.find('input', {'name': 'authenticity_token'})
